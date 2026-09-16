@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { waGeneral } from "@/lib/whatsapp";
-import { getWhatsappNumber } from "@/lib/settings";
+import { getSiteSettings, getWhatsappNumber } from "@/lib/settings";
+import { MobileMenu } from "@/components/MobileMenu";
 
 export async function SiteHeader({ dark = true }: { dark?: boolean }) {
   const number = await getWhatsappNumber();
@@ -29,17 +30,19 @@ export async function SiteHeader({ dark = true }: { dark?: boolean }) {
           href={waGeneral(number)}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full bg-white px-5 py-3 text-sm font-bold text-ink transition hover:bg-white/90"
+          className="hidden rounded-full bg-white px-5 py-3 text-sm font-bold text-ink transition hover:bg-white/90 sm:block"
         >
           Book a Trip
         </a>
+        <MobileMenu dark={dark} bookHref={waGeneral(number)} />
       </div>
     </header>
   );
 }
 
 export async function SiteFooter() {
-  const number = await getWhatsappNumber();
+  const settings = await getSiteSettings();
+  const number = settings.whatsapp_number;
   return (
     <footer className="bg-ink text-white">
       <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:px-12">
@@ -65,9 +68,13 @@ export async function SiteFooter() {
             </div>
           </div>
           <div className="flex gap-10 text-sm text-white/60">
-            <a href="#" className="hover:text-white">Instagram</a>
+            {settings.instagram_url ? (
+              <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" className="hover:text-white">Instagram</a>
+            ) : null}
             <a href={waGeneral(number)} target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a>
-            <a href="#" className="hover:text-white">Google Maps</a>
+            {settings.google_maps_url ? (
+              <a href={settings.google_maps_url} target="_blank" rel="noopener noreferrer" className="hover:text-white">Google Maps</a>
+            ) : null}
           </div>
         </div>
         <div className="mt-12 border-t border-white/10 pt-6 text-xs text-white/30">

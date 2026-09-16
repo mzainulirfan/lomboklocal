@@ -16,15 +16,22 @@ export function TransferForm({ routes, number }: { routes: TransferRoute[]; numb
     e.preventDefault();
     if (busy) return;
     setBusy(true);
+    // Buka tab sinkron saat gesture agar tidak diblokir popup blocker,
+    // URL diisi setelah lead tersimpan.
+    const win = window.open("about:blank", "_blank");
+    const go = (url: string) => {
+      if (win && !win.closed) win.location.href = url;
+      else window.location.href = url;
+    };
     try {
       const url = await submitInquiry({
         type: "transfer",
         title: `Airport → ${to}`,
         payload: { from: "Lombok Airport", to, date, pax },
       });
-      window.open(url, "_blank");
+      go(url);
     } catch {
-      window.open(waTransfer("Lombok Airport", to, date, pax, number), "_blank");
+      go(waTransfer("Lombok Airport", to, date, pax, number));
     } finally {
       setBusy(false);
     }

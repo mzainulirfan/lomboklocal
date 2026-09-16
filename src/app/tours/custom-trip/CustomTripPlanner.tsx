@@ -56,11 +56,16 @@ export function CustomTripPlanner({ number }: { number: string }) {
   async function discuss() {
     if (busy) return;
     setBusy(true);
+    const win = window.open("about:blank", "_blank");
+    const go = (url: string) => {
+      if (win && !win.closed) win.location.href = url;
+      else window.location.href = url;
+    };
     try {
       const url = await submitInquiry({ type: "custom", title: `${duration} · ${style}`, payload });
-      window.open(url, "_blank");
+      go(url);
     } catch {
-      window.open(fallbackHref, "_blank");
+      go(fallbackHref);
     } finally {
       setBusy(false);
     }

@@ -17,6 +17,11 @@ export function ContactForm({ number }: { number: string }) {
     e.preventDefault();
     if (busy) return;
     setBusy(true);
+    const win = window.open("about:blank", "_blank");
+    const go = (url: string) => {
+      if (win && !win.closed) win.location.href = url;
+      else window.location.href = url;
+    };
     try {
       const url = await submitInquiry({
         type: "contact",
@@ -24,11 +29,10 @@ export function ContactForm({ number }: { number: string }) {
         name: name || undefined,
         payload: { message },
       });
-      window.open(url, "_blank");
+      go(url);
     } catch {
-      window.open(
-        waLink(`Hi Lombok Local, I'm ${name || "a traveler"}.\n\nTopic:\n${topic}\n\nMessage:\n${message || "-"}`, number),
-        "_blank"
+      go(
+        waLink(`Hi Lombok Local, I'm ${name || "a traveler"}.\n\nTopic:\n${topic}\n\nMessage:\n${message || "-"}`, number)
       );
     } finally {
       setBusy(false);

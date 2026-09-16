@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteFooter, MobileCTA } from "@/components/layout";
 import { HideOnAdmin } from "@/components/HideOnAdmin";
 import { Analytics } from "@/components/Analytics";
+import { siteUrl } from "@/lib/site";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
   },
   description:
     "Tours, scooter rental, car rental and local experiences in Lombok. Book directly via WhatsApp.",
-  metadataBase: new URL("https://lomboklocal.example.com"),
+  metadataBase: new URL(siteUrl()),
   openGraph: {
     title: "Lombok Local — Explore Lombok Your Way",
     description: "Tours, rentals and local experiences made simple.",

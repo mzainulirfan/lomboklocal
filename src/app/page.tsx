@@ -51,7 +51,7 @@ export default async function Home() {
               <p className="mb-7 text-xs font-bold uppercase tracking-[0.28em] text-white/70">
                 Local travel • Lombok, Indonesia
               </p>
-              <h1 className="display max-w-4xl text-[clamp(4.5rem,11vw,10rem)] font-extrabold uppercase">
+              <h1 className="display max-w-4xl text-[clamp(3rem,12vw,10rem)] font-extrabold uppercase">
                 Discover
                 <br />
                 Lombok.
@@ -178,7 +178,7 @@ export default async function Home() {
                 </p>
                 <div className="mt-14 divide-y divide-black/10 border-y border-black/10">
                   {experiences.map((e) => (
-                    <Link key={e} href="/transfer" className="group flex items-center justify-between py-6">
+                    <Link key={e} href="/experiences" className="group flex items-center justify-between py-6">
                       <span className="text-xl font-bold">{e}</span>
                       <ArrowUpRight size={20} className="transition group-hover:translate-x-2" />
                     </Link>

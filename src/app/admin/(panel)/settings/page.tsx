@@ -1,4 +1,4 @@
-import { Clock, MapPin, Phone, SlidersHorizontal } from "lucide-react";
+import { Camera, Clock, MapPin, Navigation, Phone, SlidersHorizontal } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllSettingsAdmin, SETTING_LABELS, DEFAULT_SETTINGS } from "@/lib/settings";
 import { upsertSetting } from "../../actions";
@@ -9,6 +9,8 @@ const icons: Record<string, typeof Phone> = {
   contact_phone_display: Phone,
   contact_hours: Clock,
   base_location: MapPin,
+  instagram_url: Camera,
+  google_maps_url: Navigation,
 };
 
 export default async function SettingsPage() {

@@ -7,6 +7,8 @@ export const DEFAULT_SETTINGS = {
   contact_phone_display: "+62 812-3456-7890",
   contact_hours: "daily 07:00–21:00 WITA",
   base_location: "Kuta, South Lombok · delivery & pickup available",
+  instagram_url: "",
+  google_maps_url: "",
 } as const;
 
 /** Seluruh settings (cached per request). Fallback ke default bila DB belum siap. */
@@ -43,4 +45,6 @@ export const SETTING_LABELS: Record<string, { label: string; hint: string }> = {
   contact_phone_display: { label: "Nomor tampil", hint: "Teks nomor di halaman kontak, cth +62 812-3456-7890." },
   contact_hours: { label: "Jam kontak", hint: "Cth daily 07:00–21:00 WITA." },
   base_location: { label: "Lokasi base", hint: "Cth Kuta, South Lombok." },
+  instagram_url: { label: "Instagram URL", hint: "Link profil, cth https://instagram.com/… Kosongkan = disembunyikan." },
+  google_maps_url: { label: "Google Maps URL", hint: "Link lokasi di Maps. Kosongkan = disembunyikan." },
 };

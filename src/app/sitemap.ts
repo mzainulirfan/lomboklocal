@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getTours } from "@/lib/tours";
 import { posts } from "@/content/blog";
+import { siteUrl } from "@/lib/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = "https://lomboklocal.example.com";
+  const base = siteUrl();
   const staticRoutes = [
     "",
     "/tours",
