@@ -154,8 +154,8 @@ export default async function Home() {
                 </Button>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
-                {scooters.map((v, i) => (
-                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} labels={cardLabels} />
+                {scooters.map((v) => (
+                  <VehicleCard key={v.name} vehicle={v} number={number} labels={cardLabels} />
                 ))}
               </div>
             </div>

@@ -32,8 +32,8 @@ export default async function CarPage() {
         <div className="bg-ink py-16 text-white lg:py-24">
           <Container>
             <div className="grid gap-4 sm:grid-cols-2">
-              {cars.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} labels={t} />
+              {cars.map((v) => (
+                <VehicleCard key={v.name} vehicle={v} number={number} labels={t} />
               ))}
             </div>
           </Container>

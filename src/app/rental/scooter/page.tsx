@@ -121,8 +121,8 @@ export default async function ScooterPage() {
               </p>
             </div>
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {scooters.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} labels={t} />
+              {scooters.map((v) => (
+                <VehicleCard key={v.name} vehicle={v} number={number} labels={t} />
               ))}
             </div>
           </Container>

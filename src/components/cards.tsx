@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import type { Tour, Vehicle } from "@/content/site";
-import { VehicleBooking } from "@/components/VehicleBooking";
+import { VehicleBookModal } from "@/components/VehicleBookModal";
 import { getUsdRate } from "@/lib/settings";
 import { formatUSD } from "@/lib/format";
 
@@ -62,21 +62,21 @@ export type CardLabels = {
   fullNote: string;
   refCode: string;
   refHint: string;
+  selectUnit: string;
+  closeDetails: string;
 };
 
 export async function VehicleCard({
   vehicle,
-  index,
   number,
   labels,
 }: {
   vehicle: Vehicle;
-  index: string;
-  /** Nomor WA (dari DB) untuk link booking + lead logging. */
   number: string;
   labels: CardLabels;
 }) {
   const usd = formatUSD(vehicle.dailyAmount, await getUsdRate());
+  const specs = vehicle.spec.split("·").map((s) => s.trim()).filter(Boolean);
   return (
     <article className="group flex flex-col overflow-hidden rounded-[1.75rem] bg-white/5 ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:ring-white/25">
       <div className="relative aspect-[16/10] overflow-hidden">
@@ -87,43 +87,32 @@ export async function VehicleCard({
           sizes="(max-width: 768px) 100vw, 40vw"
           className="object-cover transition duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
-          <span className="rounded-full bg-white px-3.5 py-2 text-sm font-extrabold tracking-tight text-ink shadow-lg">
-            {vehicle.daily}
-            <span className="font-medium text-ink/55">{labels.perDay}</span>
-          </span>
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/70 px-3 py-2 text-[11px] font-extrabold uppercase tracking-widest text-white backdrop-blur">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            {labels.available}
-          </span>
-        </div>
+        <span className="absolute left-4 top-4 rounded-full bg-white px-3.5 py-2 text-sm font-extrabold tracking-tight text-ink shadow-lg">
+          {vehicle.daily}
+          <span className="font-medium text-ink/55">{labels.perDay}</span>
+        </span>
       </div>
       <div className="flex flex-1 flex-col p-6">
-        <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-xl font-extrabold tracking-tight">{vehicle.name}</h3>
-          <span className="shrink-0 text-sm font-bold text-white/30">{index}</span>
-        </div>
-        <p className="mt-1 text-sm text-white/50">
-          {vehicle.spec}
-          {usd && <span className="ml-2 text-white/35">{usd}{labels.perDay}</span>}
-        </p>
-        {vehicle.weekly && (
-          <p className="mt-3 inline-flex w-fit items-center rounded-full bg-emerald-400/10 px-3 py-1.5 text-xs font-bold text-emerald-300">
-            {vehicle.weekly}
-            {labels.perWeek} · {labels.weeklySave}
+        <h3 className="text-xl font-extrabold tracking-tight">{vehicle.name}</h3>
+        {vehicle.highlight && (
+          <p className="mt-2 w-fit rounded-full bg-ocean/20 px-3 py-1.5 text-xs font-bold text-cyan-200">
+            {vehicle.highlight}
           </p>
         )}
-        <ul className="mt-4 space-y-2">
-          {vehicle.perks.map((p) => (
-            <li key={p} className="flex items-center gap-2.5 text-sm text-white/70">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-400/15">
-                <Check size={12} className="text-emerald-300" />
-              </span>
-              {p}
-            </li>
+        <div className="mt-3 flex flex-wrap gap-1.5">
+          {specs.map((s) => (
+            <span key={s} className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold text-white/65">
+              {s}
+            </span>
           ))}
-        </ul>
-        <VehicleBooking model={vehicle.name} vehicleId={vehicle.id} number={number} labels={labels} />
+        </div>
+        <p className="mt-4 text-sm text-white/45">
+          {usd ? `${usd}${labels.perDay}` : vehicle.daily}
+          {vehicle.weekly && <span className="ml-2 text-white/30">· {vehicle.weekly}{labels.perWeek}</span>}
+        </p>
+        <div className="mt-auto pt-2">
+          <VehicleBookModal vehicle={vehicle} number={number} labels={labels} usd={usd} />
+        </div>
       </div>
     </article>
   );

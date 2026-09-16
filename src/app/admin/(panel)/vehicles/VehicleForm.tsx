@@ -36,6 +36,10 @@ export function VehicleForm({ vehicle }: { vehicle?: VehicleRow | null }) {
         <input name="spec" placeholder="Automatic · 2 persons" defaultValue={v?.spec ?? ""} className={input} />
       </div>
       <div>
+        <label className={label}>Highlight (pembeda, opsional)</label>
+        <input name="highlight" placeholder="Irit & lincah di kota" defaultValue={v?.highlight ?? ""} className={input} />
+      </div>
+      <div>
         <label className={label}>Harga harian (Rp)</label>
         <input name="daily_price" inputMode="numeric" required placeholder="75000" defaultValue={v?.daily_price ?? ""} className={input} />
       </div>

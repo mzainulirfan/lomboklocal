@@ -13,6 +13,7 @@ export type VehicleRow = {
   perks: string[];
   available: boolean;
   sort_order: number;
+  highlight?: string | null;
 };
 
 function toVehicle(row: VehicleRow): Vehicle {
@@ -20,6 +21,7 @@ function toVehicle(row: VehicleRow): Vehicle {
     id: row.id,
     name: row.name,
     spec: row.spec,
+    highlight: row.highlight ?? undefined,
     daily: formatRp(row.daily_price),
     weekly: row.weekly_price ? formatRp(row.weekly_price) : undefined,
     image: row.image_url,

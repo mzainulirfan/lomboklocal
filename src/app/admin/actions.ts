@@ -135,11 +135,12 @@ export async function upsertVehicle(_prev: ActionState, formData: FormData): Pro
     const pastedUrl = String(formData.get("image_url") ?? "").trim();
     const image_url = uploaded ?? pastedUrl ?? undefined;
 
-    const payload = {
-      category,
-      name,
-      spec,
-      daily_price: daily,
+  const payload = {
+    category,
+    name,
+    spec,
+    highlight: String(formData.get("highlight") ?? "").trim(),
+    daily_price: daily,
       weekly_price: weekly,
       ...(image_url !== undefined ? { image_url } : {}),
       perks: parsePerks(String(formData.get("perks") ?? "")),

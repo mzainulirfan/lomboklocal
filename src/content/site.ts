@@ -97,6 +97,8 @@ export type Vehicle = {
   id: string;
   name: string;
   spec: string;
+  /** Pembeda singkat, cth "Irit & lincah di kota". */
+  highlight?: string;
   daily: string;
   weekly?: string;
   image: string;
@@ -111,6 +113,7 @@ export const scooters: Vehicle[] = [
     id: "scooter-honda-scoopy",
     name: "Honda Scoopy",
     spec: "Automatic · 2 persons",
+    highlight: "Irit & lincah di kota",
     daily: "Rp 75K",
     weekly: "Rp 450K",
     image:
@@ -121,6 +124,7 @@ export const scooters: Vehicle[] = [
     id: "scooter-honda-vario",
     name: "Honda Vario",
     spec: "Automatic · 2 persons",
+    highlight: "Bertenaga, nyaman jarak jauh",
     daily: "Rp 100K",
     weekly: "Rp 600K",
     image:
@@ -134,6 +138,7 @@ export const cars: Vehicle[] = [
     id: "car-toyota-avanza",
     name: "Toyota Avanza",
     spec: "Manual · 6 seats · With driver",
+    highlight: "Favorit keluarga",
     daily: "Rp 650K",
     image:
       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=1000&q=85",
@@ -143,6 +148,7 @@ export const cars: Vehicle[] = [
     id: "car-toyota-innova",
     name: "Toyota Innova",
     spec: "Manual · 7 seats · With driver",
+    highlight: "Lapang & ekstra nyaman",
     daily: "Rp 850K",
     image:
       "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1000&q=85",

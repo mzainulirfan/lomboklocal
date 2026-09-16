@@ -151,6 +151,8 @@ const en = {
     phonePh: "0812… (optional)",
     refCode: "Your booking code",
     refHint: "Mention this code in chat so we can find your request faster.",
+    selectUnit: "Choose & Book",
+    closeDetails: "Close",
   },
   car: {
     label: "Rental · Car",
@@ -170,6 +172,8 @@ const en = {
     phonePh: "0812… (optional)",
     refCode: "Your booking code",
     refHint: "Mention this code in chat so we can find your request faster.",
+    selectUnit: "Choose & Book",
+    closeDetails: "Close",
   },
   transfer: {
     label: "Transfer",
@@ -410,6 +414,8 @@ const id: Dict = {
     phonePh: "0812… (opsional)",
     refCode: "Kode bookingmu",
     refHint: "Sebutkan kode ini saat chat agar permintaanmu cepat ketemu.",
+    selectUnit: "Pilih & Booking",
+    closeDetails: "Tutup",
   },
   car: {
     label: "Rental · Mobil",
@@ -429,6 +435,8 @@ const id: Dict = {
     phonePh: "0812… (opsional)",
     refCode: "Kode bookingmu",
     refHint: "Sebutkan kode ini saat chat agar permintaanmu cepat ketemu.",
+    selectUnit: "Pilih & Booking",
+    closeDetails: "Tutup",
   },
   transfer: {
     label: "Transfer",
