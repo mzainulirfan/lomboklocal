@@ -1,22 +1,39 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ArrowUpRight, CalendarX2 } from "lucide-react";
 import { InquiryButton } from "@/components/InquiryButton";
+import { checkDateBlocked } from "@/actions/availability";
 import { waTour } from "@/lib/whatsapp";
 
 /** Form tanggal + tamu di booking card tour. Tanpa reload, langsung ke WhatsApp. */
 export function TourBooking({
+  tourId,
   tourTitle,
   number,
   labels,
 }: {
+  tourId: string;
   tourTitle: string;
   number: string;
-  labels: { date: string; guests: string; book: string; opening: string };
+  labels: { date: string; guests: string; book: string; opening: string; fullNote: string };
 }) {
   const [date, setDate] = useState("");
   const [guests, setGuests] = useState("2");
+  const [checked, setChecked] = useState<{ date: string; blocked: boolean } | null>(null);
+
+  useEffect(() => {
+    if (!date) return;
+    let alive = true;
+    checkDateBlocked("tour", tourId, date).then((b) => {
+      if (alive) setChecked({ date, blocked: b });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [date, tourId]);
+
+  const blocked = checked?.date === date && checked.blocked;
 
   const label = "block text-xs font-bold uppercase tracking-widest text-white/40";
   const field =
@@ -48,6 +65,11 @@ export function TourBooking({
           />
         </div>
       </div>
+      {blocked && (
+        <p className="flex items-start gap-2 rounded-2xl bg-coral/15 px-4 py-3 text-xs font-bold leading-5 text-coral">
+          <CalendarX2 size={15} className="mt-0.5 shrink-0" /> {labels.fullNote}
+        </p>
+      )}
       <InquiryButton
         inquiry={{ type: "tour", title: tourTitle, payload: { date, guests } }}
         fallbackHref={waTour(tourTitle, date, guests, number)}

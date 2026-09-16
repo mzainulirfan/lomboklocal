@@ -302,6 +302,29 @@ export async function deleteItinerary(formData: FormData) {
   revalidateTour(slug);
 }
 
+/* ---------- Availability ---------- */
+
+export async function blockDate(formData: FormData) {
+  await requireAdmin();
+  const [itemType, itemId] = String(formData.get("item") ?? "").split(":");
+  const date = String(formData.get("date") ?? "");
+  if ((itemType !== "vehicle" && itemType !== "tour") || !itemId || !date) {
+    throw new Error("Item dan tanggal wajib diisi.");
+  }
+  const { error } = await supabaseAdmin().from("availability_blocks").upsert(
+    { item_type: itemType, item_id: itemId, date, note: String(formData.get("note") ?? "").trim() },
+    { onConflict: "item_type,item_id,date" }
+  );
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+}
+
+export async function unblockDate(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const { error } = await supabaseAdmin().from("availability_blocks").delete().eq("id", id);
+  if (error) throw new Error(`Hapus gagal: ${error.message}`);
+}
+
 /* ---------- Gallery ---------- */
 
 function revalidateGallery() {

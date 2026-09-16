@@ -21,6 +21,7 @@ export type ItineraryRow = { time: string; place: string };
 
 function toTour(row: TourRow, itinerary: ItineraryRow[]): Tour {
   return {
+    id: row.id,
     slug: row.slug,
     title: row.title,
     area: row.area,

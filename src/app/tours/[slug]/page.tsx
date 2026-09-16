@@ -121,7 +121,7 @@ export default async function TourDetail({
                   <MapPin size={15} /> {t.pickup}
                 </p>
               </div>
-              <TourBooking tourTitle={tour.title} number={number} labels={{ date: t.date, guests: t.guests, book: t.book, opening: t.opening }} />
+              <TourBooking tourId={tour.id} tourTitle={tour.title} number={number} labels={{ date: t.date, guests: t.guests, book: t.book, opening: t.opening, fullNote: t.fullNote }} />
               <p className="mt-4 text-center text-xs leading-5 text-white/40">
                 {t.note}
               </p>

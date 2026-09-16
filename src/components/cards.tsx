@@ -57,6 +57,7 @@ export type CardLabels = {
   weeklySave: string;
   cancelNote: string;
   available: string;
+  fullNote: string;
 };
 
 export async function VehicleCard({
@@ -118,7 +119,7 @@ export async function VehicleCard({
             </li>
           ))}
         </ul>
-        <VehicleBooking model={vehicle.name} number={number} labels={labels} />
+        <VehicleBooking model={vehicle.name} vehicleId={vehicle.id} number={number} labels={labels} />
       </div>
     </article>
   );

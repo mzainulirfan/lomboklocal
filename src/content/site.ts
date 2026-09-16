@@ -1,4 +1,6 @@
 export type Tour = {
+  /** id DB bila dari Supabase, slug bila fallback statis. */
+  id: string;
   slug: string;
   title: string;
   area: string;
@@ -17,8 +19,8 @@ export type Tour = {
 
 export const tours: Tour[] = [
   {
-    slug: "south-lombok-adventure",
-    title: "The Essential South",
+    id: "south-lombok-adventure",
+    slug: "south-lombok-adventure",    title: "The Essential South",
     area: "South Lombok",
     duration: "1 day",
     type: "Private",
@@ -41,6 +43,7 @@ export const tours: Tour[] = [
     excluded: ["Lunch", "Entrance fees", "Personal expenses"],
   },
   {
+    id: "snorkel-slow-down",
     slug: "snorkel-slow-down",
     title: "Snorkel & Slow Down",
     area: "Island Life",
@@ -64,6 +67,7 @@ export const tours: Tour[] = [
     excluded: ["Underwater photos", "Tips"],
   },
   {
+    id: "waterfall-culture",
     slug: "waterfall-culture",
     title: "Waterfalls & Sasak Village",
     area: "North Lombok",
@@ -89,6 +93,8 @@ export const tours: Tour[] = [
 ];
 
 export type Vehicle = {
+  /** id DB bila dari Supabase, slug statis bila fallback. */
+  id: string;
   name: string;
   spec: string;
   daily: string;
@@ -102,6 +108,7 @@ export type Vehicle = {
 
 export const scooters: Vehicle[] = [
   {
+    id: "scooter-honda-scoopy",
     name: "Honda Scoopy",
     spec: "Automatic · 2 persons",
     daily: "Rp 75K",
@@ -111,6 +118,7 @@ export const scooters: Vehicle[] = [
     perks: ["2 helmets", "Phone holder", "Free delivery*"],
   },
   {
+    id: "scooter-honda-vario",
     name: "Honda Vario",
     spec: "Automatic · 2 persons",
     daily: "Rp 100K",
@@ -123,6 +131,7 @@ export const scooters: Vehicle[] = [
 
 export const cars: Vehicle[] = [
   {
+    id: "car-toyota-avanza",
     name: "Toyota Avanza",
     spec: "Manual · 6 seats · With driver",
     daily: "Rp 650K",
@@ -131,6 +140,7 @@ export const cars: Vehicle[] = [
     perks: ["Driver + fuel", "Hotel pickup", "Flexible route"],
   },
   {
+    id: "car-toyota-innova",
     name: "Toyota Innova",
     spec: "Manual · 7 seats · With driver",
     daily: "Rp 850K",

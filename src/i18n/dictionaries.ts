@@ -86,6 +86,7 @@ const en = {
     book: "Book this trip",
     opening: "Opening…",
     note: "Continue on WhatsApp — no prepayment, confirmed manually by the local team.",
+    fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
   },
   scooter: {
     crumbHome: "Home",
@@ -139,6 +140,7 @@ const en = {
     weeklySave: "cheaper for long trips",
     cancelNote: "Free cancellation · pay on pickup",
     available: "Available",
+    fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
   },
   car: {
     label: "Rental · Car",
@@ -153,6 +155,7 @@ const en = {
     weeklySave: "cheaper for long trips",
     cancelNote: "Free cancellation · pay on pickup",
     available: "Available",
+    fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
   },
   transfer: {
     label: "Transfer",
@@ -328,6 +331,7 @@ const id: Dict = {
     book: "Pesan trip ini",
     opening: "Membuka…",
     note: "Lanjut chat WhatsApp — tanpa bayar di muka, konfirmasi manual oleh tim lokal.",
+    fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
   },
   scooter: {
     crumbHome: "Beranda",
@@ -381,6 +385,7 @@ const id: Dict = {
     weeklySave: "lebih hemat untuk trip panjang",
     cancelNote: "Batal gratis · bayar saat ambil",
     available: "Tersedia",
+    fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
   },
   car: {
     label: "Rental · Mobil",
@@ -395,6 +400,7 @@ const id: Dict = {
     weeklySave: "lebih hemat untuk trip panjang",
     cancelNote: "Batal gratis · bayar saat ambil",
     available: "Tersedia",
+    fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
   },
   transfer: {
     label: "Transfer",

@@ -17,6 +17,7 @@ export type VehicleRow = {
 
 function toVehicle(row: VehicleRow): Vehicle {
   return {
+    id: row.id,
     name: row.name,
     spec: row.spec,
     daily: formatRp(row.daily_price),

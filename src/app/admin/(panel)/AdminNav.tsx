@@ -8,6 +8,7 @@ import {
   Map,
   Van,
   Images,
+  CalendarDays,
   Inbox,
   Settings,
   ExternalLink,
@@ -16,13 +17,14 @@ import {
 import { cn } from "@/lib/cn";
 
 const items = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/vehicles", label: "Vehicles", icon: Car },
-  { href: "/admin/tours", label: "Tours", icon: Map },
-  { href: "/admin/routes", label: "Transfer", icon: Van },
-  { href: "/admin/gallery", label: "Galeri", icon: Images },
-  { href: "/admin/inquiries", label: "Leads", icon: Inbox },
-  { href: "/admin/settings", label: "Settings", icon: Settings },
+  { href: "/admin", label: "Dashboard", short: "Home", icon: LayoutDashboard },
+  { href: "/admin/vehicles", label: "Vehicles", short: "Units", icon: Car },
+  { href: "/admin/tours", label: "Tours", short: "Tours", icon: Map },
+  { href: "/admin/routes", label: "Transfer", short: "Transfer", icon: Van },
+  { href: "/admin/gallery", label: "Galeri", short: "Galeri", icon: Images },
+  { href: "/admin/schedule", label: "Jadwal", short: "Jadwal", icon: CalendarDays },
+  { href: "/admin/inquiries", label: "Leads", short: "Leads", icon: Inbox },
+  { href: "/admin/settings", label: "Settings", short: "Setelan", icon: Settings },
 ];
 
 function isActive(pathname: string, href: string) {
@@ -71,7 +73,7 @@ export function AdminTabBar() {
       aria-label="Navigasi admin"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink/95 backdrop-blur md:hidden"
     >
-      <div className="grid grid-cols-7 px-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5">
+      <div className="grid grid-cols-8 px-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5">
         {items.map((item) => {
           const active = isActive(pathname, item.href);
           return (
@@ -85,8 +87,8 @@ export function AdminTabBar() {
               )}
             >
               <item.icon size={20} strokeWidth={active ? 2.25 : 1.75} />
-              <span className="w-full truncate text-center text-[10px] font-bold leading-none">
-                {item.label}
+              <span className="w-full truncate text-center text-[9px] font-bold leading-none">
+                {item.short}
               </span>
             </Link>
           );
