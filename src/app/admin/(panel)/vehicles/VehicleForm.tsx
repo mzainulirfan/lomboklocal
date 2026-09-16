@@ -1,14 +1,25 @@
-import { upsertVehicle } from "../../actions";
+"use client";
+
+import { useActionState } from "react";
+import { AlertTriangle } from "lucide-react";
+import { upsertVehicle, type ActionState } from "../../actions";
 import { input, label } from "../ui";
+import { PhotoField } from "../PhotoField";
 import type { VehicleRow } from "@/lib/vehicles";
 
-/** Form tambah/edit kendaraan. `vehicle` kosong = mode tambah. */
+/** Form tambah/edit kendaraan. `vehicle` kosong = mode tambah. Error inline, isian aman. */
 export function VehicleForm({ vehicle }: { vehicle?: VehicleRow | null }) {
   const v = vehicle ?? null;
+  const [state, submit, pending] = useActionState<ActionState, FormData>(upsertVehicle, null);
 
   return (
-    <form action={upsertVehicle} className="grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
+    <form action={submit} className="grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
       {v && <input type="hidden" name="id" value={v.id} />}
+      {state?.error && (
+        <p role="alert" className="flex items-start gap-2 rounded-2xl bg-coral/10 px-4 py-3 text-sm font-bold text-coral md:col-span-2">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" /> {state.error}
+        </p>
+      )}
       <div>
         <label className={label}>Kategori</label>
         <select name="category" className={input} defaultValue={v?.category ?? "scooter"}>
@@ -36,10 +47,11 @@ export function VehicleForm({ vehicle }: { vehicle?: VehicleRow | null }) {
         <label className={label}>Urutan tampil</label>
         <input name="sort_order" inputMode="numeric" defaultValue={v?.sort_order ?? 0} className={input} />
       </div>
-      <div>
-        <label className={label}>Foto (upload, maks 5MB{v ? " — kosongkan bila tidak diganti" : ""})</label>
-        <input name="photo" type="file" accept="image/*" className={input} />
-      </div>
+      <PhotoField
+        label={`Foto${v ? " (kosongkan bila tidak diganti)" : " (maks 5MB)"}`}
+        current={v?.image_url}
+        labelClass={label}
+      />
       <div>
         <label className={label}>atau URL foto</label>
         <input name="image_url" placeholder="https://…" defaultValue={v?.image_url ?? ""} className={input} />
@@ -52,8 +64,12 @@ export function VehicleForm({ vehicle }: { vehicle?: VehicleRow | null }) {
         <input name="available" type="checkbox" defaultChecked={v?.available ?? true} className="h-5 w-5 accent-ink" />
         Tampilkan di web
       </label>
-      <button type="submit" className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black md:col-span-2">
-        {v ? "Simpan perubahan" : "Simpan kendaraan"}
+      <button
+        type="submit"
+        disabled={pending}
+        className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black disabled:opacity-60 md:col-span-2"
+      >
+        {pending ? "Menyimpan…" : v ? "Simpan perubahan" : "Simpan kendaraan"}
       </button>
     </form>
   );

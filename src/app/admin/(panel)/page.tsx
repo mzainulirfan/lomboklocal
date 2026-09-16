@@ -2,14 +2,16 @@ import Link from "next/link";
 import { ArrowUpRight, Car, Inbox, Map, Van } from "lucide-react";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { PanelHeader, EmptyState } from "./ui";
+import { Flash } from "./Flash";
 
 async function getStats() {
   const sb = supabaseAdmin();
-  const [vehicles, tours, routes, leads, leadsToday] = await Promise.all([
+  const [vehicles, tours, routes, leads, leadsNew, leadsToday] = await Promise.all([
     sb.from("vehicles").select("id, available", { count: "exact" }),
     sb.from("tours").select("id, published", { count: "exact" }),
     sb.from("transfer_routes").select("id", { count: "exact", head: true }),
     sb.from("inquiries").select("id", { count: "exact", head: true }),
+    sb.from("inquiries").select("id", { count: "exact", head: true }).eq("status", "baru"),
     sb.from("inquiries").select("id", { count: "exact", head: true }).gte("created_at", new Date().toISOString().slice(0, 10)),
   ]);
   const { data: recent } = await sb
@@ -24,6 +26,7 @@ async function getStats() {
     toursLive: (tours.data as { published: boolean }[] | null)?.filter((t) => t.published).length ?? 0,
     routes: routes.count ?? 0,
     leads: leads.count ?? 0,
+    leadsNew: leadsNew.count ?? 0,
     leadsToday: leadsToday.count ?? 0,
     recent: (recent ?? []) as { id: string; type: string; title: string; name: string | null; created_at: string }[],
   };
@@ -36,9 +39,22 @@ const cards = [
   { key: "leads", label: "Total leads", href: "/admin/inquiries", icon: Inbox },
 ] as const;
 
-export default async function AdminDashboard() {
+export default async function AdminDashboard({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; saved?: string }>;
+}) {
+  const { error, saved } = await searchParams;
   const configured = isSupabaseConfigured();
-  const stats = configured ? await getStats() : null;
+  let stats: Awaited<ReturnType<typeof getStats>> | null = null;
+  let statsError: string | null = null;
+  if (configured) {
+    try {
+      stats = await getStats();
+    } catch (e) {
+      statsError = e instanceof Error ? e.message : "Gagal memuat statistik.";
+    }
+  }
 
   return (
     <>
@@ -47,6 +63,8 @@ export default async function AdminDashboard() {
         title="Dashboard."
         desc="Ringkasan konten web dan lead masuk. Semua perubahan di sini langsung tampil di web publik."
       />
+
+      <Flash error={error ?? statsError ?? undefined} saved={saved} />
 
       {!configured && (
         <div className="mt-8 rounded-3xl bg-coral/10 p-6 text-sm leading-7">
@@ -78,6 +96,11 @@ export default async function AdminDashboard() {
                   {c.label}
                   <ArrowUpRight size={14} className="transition group-hover:translate-x-0.5" />
                 </p>
+                {c.key === "leads" && stats.leadsNew > 0 && (
+                  <p className="mt-2 inline-block rounded-full bg-coral/10 px-3 py-1 text-xs font-extrabold text-coral">
+                    {stats.leadsNew} baru
+                  </p>
+                )}
               </Link>
             ))}
           </div>

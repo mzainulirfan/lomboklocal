@@ -3,6 +3,13 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllSettingsAdmin, SETTING_LABELS, DEFAULT_SETTINGS } from "@/lib/settings";
 import { upsertSetting } from "../../actions";
 import { PanelHeader, EmptyState, input, label } from "../ui";
+import { Flash } from "../Flash";
+
+const groups: { title: string; keys: string[] }[] = [
+  { title: "Kontak & WhatsApp", keys: ["whatsapp_number", "contact_phone_display", "contact_hours", "base_location"] },
+  { title: "Tampilan web", keys: ["hero_image_url", "hero_image_alt", "instagram_url", "google_maps_url"] },
+  { title: "Lanjutan", keys: ["usd_rate"] },
+];
 
 const icons: Record<string, typeof Phone> = {
   whatsapp_number: Phone,
@@ -16,11 +23,18 @@ const icons: Record<string, typeof Phone> = {
   hero_image_alt: Type,
 };
 
-export default async function SettingsPage() {
+export default async function SettingsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; saved?: string }>;
+}) {
+  const { error, saved } = await searchParams;
   const configured = isSupabaseConfigured();
   const rows = configured ? await getAllSettingsAdmin() : [];
   const known = Object.keys(SETTING_LABELS);
   const extra = rows.filter((r) => !known.includes(r.key));
+  const valueOf = (key: string) =>
+    rows.find((r) => r.key === key)?.value ?? DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS] ?? "";
 
   return (
     <>
@@ -30,6 +44,8 @@ export default async function SettingsPage() {
         desc="Pengaturan global web. Nomor WhatsApp di sini dipakai oleh SEMUA tombol booking — ganti sekali, berlaku di mana-mana."
       />
 
+      <Flash error={error} saved={saved} />
+
       {!configured && (
         <div className="mt-8 rounded-3xl bg-coral/10 p-6 text-sm leading-7">
           <p className="font-bold">Supabase belum dikonfigurasi.</p>
@@ -38,32 +54,39 @@ export default async function SettingsPage() {
 
       {configured && (
         <>
-          <div className="mt-8 grid gap-4 md:grid-cols-2">
-            {known.map((key) => {
-              const current = rows.find((r) => r.key === key)?.value ?? DEFAULT_SETTINGS[key as keyof typeof DEFAULT_SETTINGS] ?? "";
-              const meta = SETTING_LABELS[key];
-              const Icon = icons[key] ?? SlidersHorizontal;
-              return (
-                <form key={key} action={upsertSetting} className="flex flex-col rounded-[1.75rem] bg-white p-5">
-                  <input type="hidden" name="key" value={key} />
-                  <p className="flex items-center gap-2 font-extrabold">
-                    <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-sand text-ocean">
-                      <Icon size={17} />
-                    </span>
-                    {meta.label}
-                  </p>
-                  <div className="mt-4 flex-1">
-                    <label className={label}>Nilai</label>
-                    <input name="value" defaultValue={current} className={input} />
-                    <p className="mt-1.5 text-xs leading-5 text-black/40">{meta.hint}</p>
-                  </div>
-                  <button type="submit" className="mt-4 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white transition hover:bg-black">
-                    Simpan
-                  </button>
-                </form>
-              );
-            })}
-          </div>
+          {groups.map((g) => (
+            <section key={g.title} className="mt-8">
+              <h2 className="mb-3 text-sm font-extrabold uppercase tracking-widest text-black/40">
+                {g.title}
+              </h2>
+              <div className="grid gap-4 md:grid-cols-2">
+                {g.keys.filter((key) => known.includes(key)).map((key) => {
+                  const current = valueOf(key);
+                  const meta = SETTING_LABELS[key];
+                  const Icon = icons[key] ?? SlidersHorizontal;
+                  return (
+                    <form key={key} action={upsertSetting} className="flex flex-col rounded-[1.75rem] bg-white p-5">
+                      <input type="hidden" name="key" value={key} />
+                      <p className="flex items-center gap-2 font-extrabold">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-sand text-ocean">
+                          <Icon size={17} />
+                        </span>
+                        {meta.label}
+                      </p>
+                      <div className="mt-4 flex-1">
+                        <label className={label}>Nilai</label>
+                        <input name="value" defaultValue={current} className={input} />
+                        <p className="mt-1.5 text-xs leading-5 text-black/40">{meta.hint}</p>
+                      </div>
+                      <button type="submit" className="mt-4 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white transition hover:bg-black">
+                        Simpan
+                      </button>
+                    </form>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
 
           {extra.length > 0 && (
             <div className="mt-4 space-y-3">

@@ -1,5 +1,10 @@
-import { upsertTour } from "../../actions";
+"use client";
+
+import { useActionState } from "react";
+import { AlertTriangle } from "lucide-react";
+import { upsertTour, type ActionState } from "../../actions";
 import { input, label } from "../ui";
+import { PhotoField } from "../PhotoField";
 
 export type TourFormValue = {
   id?: string;
@@ -21,10 +26,16 @@ export type TourFormValue = {
 /** Form tambah/edit tour. `tour` kosong = mode tambah. Itinerary diatur terpisah di halaman edit. */
 export function TourForm({ tour }: { tour?: TourFormValue | null }) {
   const t = tour ?? null;
+  const [state, submit, pending] = useActionState<ActionState, FormData>(upsertTour, null);
 
   return (
-    <form action={upsertTour} className="grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
+    <form action={submit} className="grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
       {t?.id && <input type="hidden" name="id" value={t.id} />}
+      {state?.error && (
+        <p role="alert" className="flex items-start gap-2 rounded-2xl bg-coral/10 px-4 py-3 text-sm font-bold text-coral md:col-span-2">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" /> {state.error}
+        </p>
+      )}
       <div>
         <label className={label}>Judul</label>
         <input name="title" required placeholder="The Essential South" defaultValue={t?.title ?? ""} className={input} />
@@ -55,10 +66,11 @@ export function TourForm({ tour }: { tour?: TourFormValue | null }) {
         <label className={label}>Catatan harga</label>
         <input name="price_note" placeholder="per trip · up to 4 guests" defaultValue={t?.price_note ?? ""} className={input} />
       </div>
-      <div>
-        <label className={label}>Foto (upload{t ? " — kosongkan bila tidak diganti" : ""})</label>
-        <input name="photo" type="file" accept="image/*" className={input} />
-      </div>
+      <PhotoField
+        label={`Foto${t ? " (kosongkan bila tidak diganti)" : ""}`}
+        current={t?.image_url}
+        labelClass={label}
+      />
       <div>
         <label className={label}>atau URL foto</label>
         <input name="image_url" placeholder="https://…" defaultValue={t?.image_url ?? ""} className={input} />
@@ -82,8 +94,12 @@ export function TourForm({ tour }: { tour?: TourFormValue | null }) {
       <label className="flex items-center gap-3 self-end pb-4 text-sm font-bold">
         <input name="published" type="checkbox" defaultChecked={t?.published ?? true} className="h-5 w-5 accent-ink" /> Tampilkan di web
       </label>
-      <button type="submit" className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black md:col-span-2">
-        {t ? "Simpan perubahan" : "Simpan tour"}
+      <button
+        type="submit"
+        disabled={pending}
+        className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black disabled:opacity-60 md:col-span-2"
+      >
+        {pending ? "Menyimpan…" : t ? "Simpan perubahan" : "Simpan tour"}
       </button>
     </form>
   );

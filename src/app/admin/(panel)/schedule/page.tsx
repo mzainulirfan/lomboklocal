@@ -4,8 +4,9 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllVehiclesAdmin } from "@/lib/vehicles";
 import { getAllToursAdmin } from "@/lib/tours";
 import { getBlocksInRange, getUpcomingBlocks } from "@/lib/availability";
-import { blockDate, unblockDate } from "../../actions";
-import { PanelHeader, EmptyState } from "../ui";
+import { blockDate, blockRange, unblockDate } from "../../actions";
+import { PanelHeader, EmptyState, input, label } from "../ui";
+import { Flash } from "../Flash";
 import { cn } from "@/lib/cn";
 
 const MONTHS = [
@@ -37,9 +38,10 @@ function shiftMonth(month: string, delta: number) {
 export default async function SchedulePage({
   searchParams,
 }: {
-  searchParams: Promise<{ item?: string; month?: string }>;
+  searchParams: Promise<{ item?: string; month?: string; error?: string; saved?: string }>;
 }) {
   const params = await searchParams;
+  const { error, saved } = params;
   const configured = isSupabaseConfigured();
   const vehicles = configured ? await getAllVehiclesAdmin() : [];
   const tours = configured ? await getAllToursAdmin() : [];
@@ -74,6 +76,8 @@ export default async function SchedulePage({
         desc="Tandai tanggal penuh per unit/tour. Tanggal yang diblokir memunculkan peringatan di form booking — overbook kehindari, lead tetap masuk."
       />
 
+      <Flash error={error} saved={saved} />
+
       {!configured && (
         <div className="mt-8 rounded-3xl bg-coral/10 p-6 text-sm leading-7">
           <p className="font-bold">Supabase belum dikonfigurasi.</p>
@@ -98,6 +102,22 @@ export default async function SchedulePage({
             <input type="hidden" name="month" value={month} />
             <button type="submit" className="rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-white">
               Tampilkan
+            </button>
+          </form>
+
+          <form action={blockRange} className="mt-4 grid grid-cols-2 items-end gap-3 rounded-[2rem] bg-white p-5 sm:grid-cols-[1fr_1fr_1fr_auto]">
+            <input type="hidden" name="item" value={item} />
+            <p className="col-span-2 text-sm font-extrabold sm:col-span-1">Blokir rentang sekaligus</p>
+            <div>
+              <label htmlFor="from" className={label}>Dari</label>
+              <input id="from" name="from" type="date" required className={input} />
+            </div>
+            <div>
+              <label htmlFor="to" className={label}>Sampai</label>
+              <input id="to" name="to" type="date" required className={input} />
+            </div>
+            <button type="submit" className="col-span-2 rounded-full bg-coral px-6 py-3.5 text-sm font-bold text-white transition hover:brightness-110 sm:col-span-1">
+              Blokir rentang
             </button>
           </form>
 

@@ -1,15 +1,24 @@
-import { createRoute, updateRoute } from "../../actions";
+"use client";
+
+import { useActionState } from "react";
+import { AlertTriangle } from "lucide-react";
+import { createRoute, updateRoute, type ActionState } from "../../actions";
 import { input, label } from "../ui";
 import type { TransferRouteRow } from "@/lib/transfers";
 
-/** Form tambah/edit rute. `route` kosong = mode tambah. */
+/** Form tambah/edit rute. `route` kosong = mode tambah. Error inline, isian aman. */
 export function RouteForm({ route }: { route?: TransferRouteRow | null }) {
   const r = route ?? null;
-  const action = r ? updateRoute : createRoute;
+  const [state, submit, pending] = useActionState<ActionState, FormData>(r ? updateRoute : createRoute, null);
 
   return (
-    <form action={action} className="grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
+    <form action={submit} className="grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
       {r && <input type="hidden" name="id" value={r.id} />}
+      {state?.error && (
+        <p role="alert" className="flex items-start gap-2 rounded-2xl bg-coral/10 px-4 py-3 text-sm font-bold text-coral md:col-span-2">
+          <AlertTriangle size={16} className="mt-0.5 shrink-0" /> {state.error}
+        </p>
+      )}
       <div>
         <label className={label}>Dari</label>
         <input name="from_loc" defaultValue={r?.from_loc ?? "Lombok Airport"} className={input} />
@@ -26,8 +35,12 @@ export function RouteForm({ route }: { route?: TransferRouteRow | null }) {
         <label className={label}>Urutan tampil</label>
         <input name="sort_order" inputMode="numeric" defaultValue={r?.sort_order ?? 0} className={input} />
       </div>
-      <button type="submit" className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black md:col-span-2">
-        {r ? "Simpan perubahan" : "Simpan rute"}
+      <button
+        type="submit"
+        disabled={pending}
+        className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black disabled:opacity-60 md:col-span-2"
+      >
+        {pending ? "Menyimpan…" : r ? "Simpan perubahan" : "Simpan rute"}
       </button>
     </form>
   );

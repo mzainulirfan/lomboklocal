@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { MessageCircle, Trash2 } from "lucide-react";
+import { MessageCircle, Search } from "lucide-react";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { buildInquiryMessage, type InquiryInput } from "@/lib/inquiries";
 import { getWhatsappNumber } from "@/lib/settings";
-import { deleteInquiry } from "../../actions";
+import { deleteInquiry, setInquiryStatus } from "../../actions";
 import { PanelHeader, EmptyState } from "../ui";
+import { ConfirmButton } from "../ConfirmButton";
+import { Flash } from "../Flash";
 import { cn } from "@/lib/cn";
 
 type InquiryRow = {
@@ -12,6 +14,7 @@ type InquiryRow = {
   type: string;
   title: string;
   name: string | null;
+  status: string;
   payload: Record<string, string>;
   created_at: string;
 };
@@ -24,7 +27,8 @@ const typeLabel: Record<string, string> = {
   custom: "Custom trip",
 };
 
-const filters = ["all", "tour", "vehicle", "transfer", "contact", "custom"];
+const typeFilters = ["all", "tour", "vehicle", "transfer", "contact", "custom"];
+const statuses = ["baru", "dihubungi", "deal", "batal"] as const;
 
 const typeDot: Record<string, string> = {
   tour: "bg-ocean",
@@ -32,6 +36,13 @@ const typeDot: Record<string, string> = {
   transfer: "bg-emerald-500",
   contact: "bg-amber-500",
   custom: "bg-violet-500",
+};
+
+const statusStyle: Record<string, string> = {
+  baru: "bg-ocean/10 text-ocean",
+  dihubungi: "bg-amber-500/10 text-amber-700",
+  deal: "bg-emerald-500/10 text-emerald-700",
+  batal: "bg-black/5 text-black/40",
 };
 
 function timeAgo(iso: string) {
@@ -46,13 +57,23 @@ function timeAgo(iso: string) {
   return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
 }
 
+function qs(base: string, params: Record<string, string | undefined>) {
+  const q = Object.entries(params)
+    .filter(([, v]) => v && v !== "all" && v !== "")
+    .map(([k, v]) => `${k}=${encodeURIComponent(v as string)}`)
+    .join("&");
+  return q ? `${base}?${q}` : base;
+}
+
 export default async function InquiriesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string }>;
+  searchParams: Promise<{ type?: string; status?: string; q?: string; error?: string; saved?: string }>;
 }) {
-  const { type } = await searchParams;
-  const active = filters.includes(type ?? "") ? (type as string) : "all";
+  const sp = await searchParams;
+  const type = typeFilters.includes(sp.type ?? "") ? (sp.type as string) : "all";
+  const status = (statuses as readonly string[]).includes(sp.status ?? "") ? (sp.status as string) : "all";
+  const query = (sp.q ?? "").trim().toLowerCase();
   const configured = isSupabaseConfigured();
   const number = await getWhatsappNumber();
 
@@ -64,12 +85,18 @@ export default async function InquiriesPage({
         .select("*")
         .order("created_at", { ascending: false })
         .limit(200);
-      if (active !== "all") q = q.eq("type", active);
+      if (type !== "all") q = q.eq("type", type);
+      if (status !== "all") q = q.eq("status", status);
       const { data } = await q;
       rows = (data ?? []) as InquiryRow[];
     } catch {
       rows = [];
     }
+  }
+  if (query) {
+    rows = rows.filter((r) =>
+      `${r.title} ${r.name ?? ""} ${Object.values(r.payload ?? {}).join(" ")}`.toLowerCase().includes(query)
+    );
   }
 
   return (
@@ -77,20 +104,55 @@ export default async function InquiriesPage({
       <PanelHeader
         kicker="Leads masuk"
         title="Inquiries."
-        desc="Setiap submit form transfer/contact/custom-trip dan tombol booking tour tercatat di sini. Follow up via WhatsApp."
+        desc="Setiap submit form tercatat di sini. Ubah status setelah difollow-up agar tidak ada lead yang terlewat."
       />
 
-      <div className="mt-8 flex flex-wrap gap-2">
-        {filters.map((f) => (
+      <Flash error={sp.error} saved={sp.saved} />
+
+      <form method="get" action="/admin/inquiries" className="mt-8 flex gap-2">
+        {type !== "all" && <input type="hidden" name="type" value={type} />}
+        {status !== "all" && <input type="hidden" name="status" value={status} />}
+        <div className="relative flex-1">
+          <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black/35" />
+          <input
+            name="q"
+            defaultValue={sp.q ?? ""}
+            placeholder="Cari nama, judul, detail…"
+            className="w-full rounded-full border border-black/10 bg-white py-3 pl-11 pr-4 text-sm font-bold placeholder:font-normal placeholder:text-black/35"
+          />
+        </div>
+        <button type="submit" className="shrink-0 rounded-full bg-ink px-6 py-3 text-sm font-bold text-white">
+          Cari
+        </button>
+      </form>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {["all", ...statuses].map((s) => (
           <Link
-            key={f}
-            href={f === "all" ? "/admin/inquiries" : `/admin/inquiries?type=${f}`}
+            key={s}
+            href={qs("/admin/inquiries", { type, status: s, q: sp.q })}
             className={cn(
-              "rounded-full px-5 py-2.5 text-sm font-bold transition",
-              active === f ? "bg-ink text-white" : "bg-white hover:bg-black/5"
+              "rounded-full px-4 py-2 text-sm font-bold transition",
+              (status === s ? "bg-ink text-white" : "bg-white hover:bg-black/5") +
+                (s !== "all" ? ` ${statusStyle[s]}` : "")
             )}
           >
-            {f === "all" ? "Semua" : (typeLabel[f] ?? f)}
+            {s === "all" ? "Semua status" : s}
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {typeFilters.map((f) => (
+          <Link
+            key={f}
+            href={qs("/admin/inquiries", { type: f, status, q: sp.q })}
+            className={cn(
+              "rounded-full px-4 py-2 text-sm font-bold transition",
+              type === f ? "bg-ink text-white" : "bg-white hover:bg-black/5"
+            )}
+          >
+            {f === "all" ? "Semua tipe" : (typeLabel[f] ?? f)}
           </Link>
         ))}
       </div>
@@ -101,7 +163,9 @@ export default async function InquiriesPage({
         </p>
       )}
 
-      {configured && rows.length === 0 && <div className="mt-8"><EmptyState>Belum ada inquiry{active !== "all" ? ` tipe ${typeLabel[active]}` : ""}.</EmptyState></div>}
+      {configured && rows.length === 0 && (
+        <div className="mt-8"><EmptyState>Belum ada inquiry yang cocok.</EmptyState></div>
+      )}
 
       <div className="mt-6 space-y-3">
         {rows.map((r) => {
@@ -117,6 +181,7 @@ export default async function InquiriesPage({
           } catch {
             /* biarkan # */
           }
+          const st = (statuses as readonly string[]).includes(r.status) ? r.status : "baru";
           return (
             <div key={r.id} className="rounded-[1.75rem] bg-white p-5">
               <div className="flex items-start gap-3.5">
@@ -127,12 +192,13 @@ export default async function InquiriesPage({
                   <p className="truncate font-extrabold">
                     {r.title} {r.name ? <span className="font-normal text-black/50">· {r.name}</span> : null}
                   </p>
-                  <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold uppercase tracking-widest text-black/40">
+                  <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-sand px-2.5 py-1 text-black/60">
                       <span className={cn("h-1.5 w-1.5 rounded-full", typeDot[r.type] ?? "bg-black/30")} />
                       {typeLabel[r.type] ?? r.type}
                     </span>
-                    {timeAgo(r.created_at)}
+                    <span className={cn("rounded-full px-2.5 py-1", statusStyle[st])}>{st}</span>
+                    <span className="text-black/40">{timeAgo(r.created_at)}</span>
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-2">
@@ -146,17 +212,13 @@ export default async function InquiriesPage({
                   >
                     <MessageCircle size={16} />
                   </a>
-                  <form action={deleteInquiry}>
-                    <input type="hidden" name="id" value={r.id} />
-                    <button
-                      type="submit"
-                      title="Hapus"
-                      aria-label={`Hapus inquiry ${r.title}`}
-                      className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </form>
+                  <ConfirmButton
+                    action={deleteInquiry}
+                    fields={{ id: r.id }}
+                    itemName={`lead ${r.title}`}
+                    title="Hapus lead"
+                    icon
+                  />
                 </div>
               </div>
               {r.payload && Object.keys(r.payload).length > 0 && (
@@ -169,6 +231,25 @@ export default async function InquiriesPage({
                   ))}
                 </dl>
               )}
+              <form action={setInquiryStatus} className="mt-3 flex items-center gap-2 border-t border-black/5 pt-3">
+                <input type="hidden" name="id" value={r.id} />
+                <label htmlFor={`st-${r.id}`} className="text-xs font-bold uppercase tracking-widest text-black/40">
+                  Status
+                </label>
+                <select
+                  id={`st-${r.id}`}
+                  name="status"
+                  defaultValue={st}
+                  className="flex-1 rounded-full border border-black/10 bg-white px-4 py-2.5 text-sm font-bold"
+                >
+                  {statuses.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+                <button type="submit" className="rounded-full bg-ink px-5 py-2.5 text-sm font-bold text-white">
+                  Simpan
+                </button>
+              </form>
             </div>
           );
         })}

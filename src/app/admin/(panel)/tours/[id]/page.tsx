@@ -5,6 +5,7 @@ import { supabasePublic } from "@/lib/supabase";
 import type { TourRow } from "@/lib/tours";
 import { addItinerary, deleteItinerary } from "../../../actions";
 import { PanelHeader, EmptyState, input, label } from "../../ui";
+import { ConfirmButton } from "../../ConfirmButton";
 import { TourForm } from "../TourForm";
 
 type Itin = { id: string; time: string; place: string };
@@ -49,13 +50,14 @@ export default async function EditTourPage({ params }: { params: Promise<{ id: s
               <span className="font-extrabold tabular-nums text-ocean">{s.time}</span>
               <span className="truncate font-bold">{s.place}</span>
             </p>
-            <form action={deleteItinerary} className="shrink-0">
-              <input type="hidden" name="id" value={s.id} />
-              <input type="hidden" name="slug" value={t.slug} />
-              <button type="submit" className="rounded-full bg-coral/10 px-4 py-2 text-sm font-bold text-coral transition hover:bg-coral hover:text-white">
-                Hapus
-              </button>
-            </form>
+            <div className="shrink-0">
+              <ConfirmButton
+                action={deleteItinerary}
+                fields={{ id: s.id, slug: t.slug }}
+                itemName={`stop ${s.time} ${s.place}`}
+                title="Hapus"
+              />
+            </div>
           </div>
         ))}
         {stops.length === 0 && <EmptyState>Belum ada stop — tambah di bawah.</EmptyState>}

@@ -1,12 +1,19 @@
 import Link from "next/link";
-import { ArrowRight, Pencil, Plus, Trash2 } from "lucide-react";
+import { ArrowRight, Pencil, Plus } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllRoutesAdmin } from "@/lib/transfers";
 import { formatRp } from "@/lib/format";
 import { deleteRoute } from "../../actions";
 import { PanelHeader, EmptyState, ViewLink } from "../ui";
+import { ConfirmButton } from "../ConfirmButton";
+import { Flash } from "../Flash";
 
-export default async function RoutesPage() {
+export default async function RoutesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; saved?: string }>;
+}) {
+  const { error, saved } = await searchParams;
   const configured = isSupabaseConfigured();
   const routes = configured ? await getAllRoutesAdmin() : [];
 
@@ -25,6 +32,8 @@ export default async function RoutesPage() {
           </Link>
         }
       />
+
+      <Flash error={error} saved={saved} />
 
       {configured && (
         <>
@@ -55,17 +64,13 @@ export default async function RoutesPage() {
                   >
                     <Pencil size={14} /> Edit harga
                   </Link>
-                  <form action={deleteRoute}>
-                    <input type="hidden" name="id" value={r.id} />
-                    <button
-                      type="submit"
-                      title="Hapus rute"
-                      aria-label={`Hapus rute ke ${r.to_loc}`}
-                      className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </form>
+                  <ConfirmButton
+                    action={deleteRoute}
+                    fields={{ id: r.id }}
+                    itemName={`rute ke ${r.to_loc}`}
+                    title="Hapus rute"
+                    icon
+                  />
                 </div>
               </article>
             ))}

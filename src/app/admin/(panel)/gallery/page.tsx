@@ -1,12 +1,20 @@
 import Link from "next/link";
-import { Eye, EyeOff, ImagePlus, Pencil, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Pencil } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllGalleryAdmin } from "@/lib/gallery";
-import { createGallery, deleteGallery, toggleGallery, updateGallery } from "../../actions";
+import { deleteGallery, toggleGallery, updateGallery } from "../../actions";
 import { PanelHeader, EmptyState, ViewLink, input, label } from "../ui";
+import { GalleryAddForm } from "./GalleryAddForm";
+import { ConfirmButton } from "../ConfirmButton";
+import { Flash } from "../Flash";
 import { cn } from "@/lib/cn";
 
-export default async function GalleryPage() {
+export default async function GalleryPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string; saved?: string }>;
+}) {
+  const { error, saved } = await searchParams;
   const configured = isSupabaseConfigured();
   const photos = configured ? await getAllGalleryAdmin() : [];
 
@@ -26,35 +34,11 @@ export default async function GalleryPage() {
         }
       />
 
+      <Flash error={error} saved={saved} />
+
       {configured && (
         <>
-          <form action={createGallery} className="mt-8 grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
-            <p className="flex items-center gap-2 font-extrabold md:col-span-2">
-              <ImagePlus size={17} /> Tambah foto
-            </p>
-            <div>
-              <label className={label}>Foto (upload, maks 5MB)</label>
-              <input name="photo" type="file" accept="image/*" className={input} />
-            </div>
-            <div>
-              <label className={label}>atau URL foto</label>
-              <input name="image_url" placeholder="https://…" className={input} />
-            </div>
-            <div>
-              <label className={label}>Alt text (SEO)</label>
-              <input name="alt" placeholder="Pantai Tanjung Aan" className={input} />
-            </div>
-            <div>
-              <label className={label}>Urutan tampil</label>
-              <input name="sort_order" inputMode="numeric" defaultValue={photos.length + 1} className={input} />
-            </div>
-            <label className="flex items-center gap-3 text-sm font-bold md:col-span-2">
-              <input name="published" type="checkbox" defaultChecked className="h-5 w-5 accent-ink" /> Tampilkan di web
-            </label>
-            <button type="submit" className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black md:col-span-2">
-              Simpan foto
-            </button>
-          </form>
+          <GalleryAddForm nextOrder={photos.length + 1} />
 
           {photos.length === 0 && (
             <div className="mt-6">
@@ -112,12 +96,14 @@ export default async function GalleryPage() {
                     </button>
                   </div>
                 </form>
-                <form action={deleteGallery} className="px-5 pb-5">
-                  <input type="hidden" name="id" value={p.id} />
-                  <button type="submit" className="inline-flex w-full items-center justify-center gap-1.5 rounded-full bg-coral/10 px-4 py-2.5 text-sm font-bold text-coral transition hover:bg-coral hover:text-white">
-                    <Trash2 size={15} /> Hapus foto
-                  </button>
-                </form>
+                <div className="px-5 pb-5">
+                  <ConfirmButton
+                    action={deleteGallery}
+                    fields={{ id: p.id }}
+                    itemName="foto ini"
+                    title="Hapus foto"
+                  />
+                </div>
               </article>
             ))}
           </div>

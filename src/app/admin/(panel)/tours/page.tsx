@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { Clock, Eye, EyeOff, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
+import { Clock, Eye, EyeOff, MapPin, Pencil, Plus, Search } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllToursAdmin } from "@/lib/tours";
 import { formatRp } from "@/lib/format";
 import { deleteTour, toggleTour } from "../../actions";
 import { PanelHeader, EmptyState, ViewLink } from "../ui";
+import { ConfirmButton } from "../ConfirmButton";
+import { Flash } from "../Flash";
 import { cn } from "@/lib/cn";
 
 const tabs = [
@@ -16,15 +18,19 @@ const tabs = [
 export default async function ToursPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>;
+  searchParams: Promise<{ status?: string; q?: string; error?: string; saved?: string }>;
 }) {
-  const { status } = await searchParams;
+  const { status, q, error, saved } = await searchParams;
   const active = status === "draft" ? "draft" : status === "live" ? "live" : "all";
+  const query = (q ?? "").trim().toLowerCase();
   const configured = isSupabaseConfigured();
   const all = configured ? await getAllToursAdmin() : [];
   const liveCount = all.filter((t) => t.published).length;
-  const list =
+  const byStatus =
     active === "live" ? all.filter((t) => t.published) : active === "draft" ? all.filter((t) => !t.published) : all;
+  const list = query
+    ? byStatus.filter((t) => `${t.title} ${t.area} ${t.slug}`.toLowerCase().includes(query))
+    : byStatus;
 
   return (
     <>
@@ -42,9 +48,26 @@ export default async function ToursPage({
         }
       />
 
+      <Flash error={error} saved={saved} />
+
       {configured && (
         <>
-          <div className="mt-8 flex flex-wrap gap-2">
+          <form method="get" action="/admin/tours" className="mt-8 flex gap-2">
+            {active !== "all" && <input type="hidden" name="status" value={active} />}
+            <div className="relative flex-1">
+              <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black/35" />
+              <input
+                name="q"
+                defaultValue={q ?? ""}
+                placeholder="Cari tour…"
+                className="w-full rounded-full border border-black/10 bg-white py-3 pl-11 pr-4 text-sm font-bold placeholder:font-normal placeholder:text-black/35"
+              />
+            </div>
+            <button type="submit" className="shrink-0 rounded-full bg-ink px-6 py-3 text-sm font-bold text-white">
+              Cari
+            </button>
+          </form>
+          <div className="mt-4 flex flex-wrap gap-2">
             {tabs.map((t) => {
               const count = t.key === "all" ? all.length : t.key === "live" ? liveCount : all.length - liveCount;
               return (
@@ -127,18 +150,13 @@ export default async function ToursPage({
                     >
                       <Pencil size={14} /> Edit + itinerary
                     </Link>
-                    <form action={deleteTour}>
-                      <input type="hidden" name="id" value={t.id} />
-                      <input type="hidden" name="slug" value={t.slug} />
-                      <button
-                        type="submit"
-                        title="Hapus permanen"
-                        aria-label={`Hapus ${t.title}`}
-                        className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
+                    <ConfirmButton
+                      action={deleteTour}
+                      fields={{ id: t.id, slug: t.slug }}
+                      itemName={t.title}
+                      title="Hapus"
+                      icon
+                    />
                   </div>
                 </div>
               </article>

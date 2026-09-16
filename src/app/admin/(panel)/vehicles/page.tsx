@@ -1,10 +1,12 @@
 import Link from "next/link";
-import { Eye, EyeOff, Pencil, Plus, Trash2 } from "lucide-react";
+import { Eye, EyeOff, Pencil, Plus, Search } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllVehiclesAdmin } from "@/lib/vehicles";
 import { formatRp } from "@/lib/format";
 import { deleteVehicle, toggleVehicle } from "../../actions";
 import { PanelHeader, EmptyState, ViewLink } from "../ui";
+import { ConfirmButton } from "../ConfirmButton";
+import { Flash } from "../Flash";
 import { cn } from "@/lib/cn";
 
 const tabs = [
@@ -16,14 +18,16 @@ const tabs = [
 export default async function VehiclesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string; error?: string; saved?: string }>;
 }) {
-  const { category } = await searchParams;
+  const { category, q, error, saved } = await searchParams;
   const active = category === "car" ? "car" : category === "scooter" ? "scooter" : "all";
+  const query = (q ?? "").trim().toLowerCase();
   const configured = isSupabaseConfigured();
   const all = configured ? await getAllVehiclesAdmin() : [];
   const live = all.filter((v) => v.available).length;
-  const list = active === "all" ? all : all.filter((v) => v.category === active);
+  const byCat = active === "all" ? all : all.filter((v) => v.category === active);
+  const list = query ? byCat.filter((v) => `${v.name} ${v.spec}`.toLowerCase().includes(query)) : byCat;
 
   return (
     <>
@@ -41,6 +45,8 @@ export default async function VehiclesPage({
         }
       />
 
+      <Flash error={error} saved={saved} />
+
       {!configured && (
         <div className="mt-8 rounded-3xl bg-coral/10 p-6 text-sm leading-7">
           <p className="font-bold">Supabase belum dikonfigurasi.</p>
@@ -50,7 +56,22 @@ export default async function VehiclesPage({
 
       {configured && (
         <>
-          <div className="mt-8 flex flex-wrap gap-2">
+          <form method="get" action="/admin/vehicles" className="mt-8 flex gap-2">
+            {active !== "all" && <input type="hidden" name="category" value={active} />}
+            <div className="relative flex-1">
+              <Search size={17} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-black/35" />
+              <input
+                name="q"
+                defaultValue={q ?? ""}
+                placeholder="Cari kendaraan…"
+                className="w-full rounded-full border border-black/10 bg-white py-3 pl-11 pr-4 text-sm font-bold placeholder:font-normal placeholder:text-black/35"
+              />
+            </div>
+            <button type="submit" className="shrink-0 rounded-full bg-ink px-6 py-3 text-sm font-bold text-white">
+              Cari
+            </button>
+          </form>
+          <div className="mt-4 flex flex-wrap gap-2">
             {tabs.map((t) => {
               const count = t.key === "all" ? all.length : all.filter((v) => v.category === t.key).length;
               return (
@@ -148,17 +169,13 @@ export default async function VehiclesPage({
                     >
                       <Pencil size={14} /> Edit
                     </Link>
-                    <form action={deleteVehicle}>
-                      <input type="hidden" name="id" value={v.id} />
-                      <button
-                        type="submit"
-                        title="Hapus permanen"
-                        aria-label={`Hapus ${v.name}`}
-                        className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </form>
+                    <ConfirmButton
+                      action={deleteVehicle}
+                      fields={{ id: v.id }}
+                      itemName={v.name}
+                      title="Hapus"
+                      icon
+                    />
                   </div>
                 </div>
               </article>
