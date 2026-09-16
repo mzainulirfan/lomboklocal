@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
-import { VehicleCard } from "@/components/cards";
+import { VehicleShowcase } from "@/components/VehicleShowcase";
 import { getVehicles } from "@/lib/vehicles";
-import { getWhatsappNumber } from "@/lib/settings";
+import { getUsdRate, getWhatsappNumber } from "@/lib/settings";
+import { formatUSD } from "@/lib/format";
 import { getDict, getLocale } from "@/i18n/dictionaries";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Car Rental Lombok",
@@ -15,7 +17,9 @@ export const metadata: Metadata = {
 export default async function CarPage() {
   const cars = await getVehicles("car");
   const number = await getWhatsappNumber();
+  const rate = await getUsdRate();
   const t = getDict(await getLocale()).car;
+  const fleet = cars.map((v) => ({ vehicle: v, usd: formatUSD(v.dailyAmount, rate) }));
   return (
     <>
       <SiteHeader dark={false} />
@@ -29,12 +33,12 @@ export default async function CarPage() {
             {t.desc}
           </p>
         </Container>
-        <div className="bg-ink py-16 text-white lg:py-24">
+        <div id="fleet" className="scroll-mt-8 bg-ink py-16 text-white lg:py-24">
           <Container>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {cars.map((v) => (
-                <VehicleCard key={v.name} vehicle={v} number={number} labels={t} />
-              ))}
+            <div className="mt-12">
+              <Suspense>
+                <VehicleShowcase items={fleet} number={number} labels={t} detailsLabel={t.label} />
+              </Suspense>
             </div>
           </Container>
         </div>

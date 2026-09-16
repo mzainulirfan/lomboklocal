@@ -70,15 +70,18 @@ export async function VehicleCard({
   vehicle,
   number,
   labels,
+  href,
 }: {
   vehicle: Vehicle;
   number: string;
   labels: CardLabels;
+  /** Bila diisi, kartu menjadi link preview (tanpa tombol modal). */
+  href?: string;
 }) {
   const usd = formatUSD(vehicle.dailyAmount, await getUsdRate());
   const specs = vehicle.spec.split("·").map((s) => s.trim()).filter(Boolean);
-  return (
-    <article className="group flex flex-col overflow-hidden rounded-[1.75rem] bg-white/5 ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:ring-white/25">
+  const body = (
+    <>
       <div className="relative aspect-[16/10] overflow-hidden">
         <Image
           src={vehicle.image}
@@ -111,9 +114,26 @@ export async function VehicleCard({
           {vehicle.weekly && <span className="ml-2 text-white/30">· {vehicle.weekly}{labels.perWeek}</span>}
         </p>
         <div className="mt-auto pt-2">
-          <VehicleBookModal vehicle={vehicle} number={number} labels={labels} usd={usd} />
+          {href ? (
+            <span className="mt-5 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-4 text-sm font-bold text-ink transition group-hover:bg-white/90">
+              {labels.selectUnit} <ArrowUpRight size={16} className="ml-2" />
+            </span>
+          ) : (
+            <VehicleBookModal vehicle={vehicle} number={number} labels={labels} usd={usd} />
+          )}
         </div>
       </div>
+    </>
+  );
+  return (
+    <article className="group flex flex-col overflow-hidden rounded-[1.75rem] bg-white/5 ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:ring-white/25">
+      {href ? (
+        <Link href={href} className="flex flex-1 flex-col" aria-label={vehicle.name}>
+          {body}
+        </Link>
+      ) : (
+        body
+      )}
     </article>
   );
 }

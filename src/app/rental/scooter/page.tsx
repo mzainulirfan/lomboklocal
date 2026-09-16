@@ -12,11 +12,13 @@ import {
 } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel, Button } from "@/components/ui";
-import { VehicleCard } from "@/components/cards";
+import { VehicleShowcase } from "@/components/VehicleShowcase";
 import { getVehicles } from "@/lib/vehicles";
-import { getWhatsappNumber } from "@/lib/settings";
+import { getUsdRate, getWhatsappNumber } from "@/lib/settings";
+import { formatUSD } from "@/lib/format";
 import { waGeneral } from "@/lib/whatsapp";
 import { getDict, getLocale } from "@/i18n/dictionaries";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "Scooter Rental Kuta Lombok",
@@ -30,7 +32,9 @@ const condIcons = [IdCard, Wallet, CalendarX2, Fuel];
 export default async function ScooterPage() {
   const scooters = await getVehicles("scooter");
   const number = await getWhatsappNumber();
+  const rate = await getUsdRate();
   const t = getDict(await getLocale()).scooter;
+  const fleet = scooters.map((v) => ({ vehicle: v, usd: formatUSD(v.dailyAmount, rate) }));
   const steps = t.steps.map((s, i) => ({ ...s, icon: stepIcons[i] }));
   const conditions = t.conds.map((c, i) => ({ ...c, icon: condIcons[i] }));
   const from = scooters[0]?.daily ?? "Rp 75K";
@@ -120,10 +124,10 @@ export default async function ScooterPage() {
                 {t.fleetDesc}
               </p>
             </div>
-            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {scooters.map((v) => (
-                <VehicleCard key={v.name} vehicle={v} number={number} labels={t} />
-              ))}
+            <div className="mt-12">
+              <Suspense>
+                <VehicleShowcase items={fleet} number={number} labels={t} detailsLabel={t.fleetA} />
+              </Suspense>
             </div>
           </Container>
         </div>
