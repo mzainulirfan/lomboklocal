@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { VehicleCard } from "@/components/cards";
-import { cars } from "@/content/site";
+import { getVehicles } from "@/lib/vehicles";
 import { waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
     "Car rental in Lombok with driver from Rp 650K/day. Fuel, pickup and flexible route included.",
 };
 
-export default function CarPage() {
+export default async function CarPage() {
+  const cars = await getVehicles("car");
   return (
     <>
       <SiteHeader dark={false} />

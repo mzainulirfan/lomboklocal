@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { VehicleCard } from "@/components/cards";
-import { scooters } from "@/content/site";
+import { getVehicles } from "@/lib/vehicles";
 import { waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -11,7 +11,8 @@ export const metadata: Metadata = {
     "Scooter rental in Kuta Lombok from Rp 75K/day. Helmets, phone holder and free delivery. Book via WhatsApp.",
 };
 
-export default function ScooterPage() {
+export default async function ScooterPage() {
+  const scooters = await getVehicles("scooter");
   return (
     <>
       <SiteHeader dark={false} />

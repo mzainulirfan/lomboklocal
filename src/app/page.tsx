@@ -5,7 +5,8 @@ import { ArrowUpRight, Bike, Car, Ship, Van } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel, Button } from "@/components/ui";
 import { TourCard, VehicleCard } from "@/components/cards";
-import { tours, scooters } from "@/content/site";
+import { tours } from "@/content/site";
+import { getVehicles } from "@/lib/vehicles";
 import { waGeneral, waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -23,7 +24,8 @@ const services = [
 
 const experiences = ["Surf & Ocean", "Sasak Culture", "Waterfall Adventure", "Local Food"];
 
-export default function Home() {
+export default async function Home() {
+  const scooters = (await getVehicles("scooter")).slice(0, 2);
   return (
     <>
       <SiteHeader />
