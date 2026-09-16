@@ -23,7 +23,7 @@ export default async function CustomTripPage() {
           <h1 className="display max-w-3xl text-5xl font-extrabold uppercase sm:text-7xl">
             {t.title}
           </h1>
-          <CustomTripPlanner number={number} t={t} phoneLabel={dict.common.phone} phonePh={dict.common.phonePh} />
+          <CustomTripPlanner number={number} t={t} phoneLabel={dict.common.phone} phonePh={dict.common.phonePh} refCodeLabel={dict.common.refCode} refHint={dict.common.refHint} />
         </Container>
       </main>
     </>

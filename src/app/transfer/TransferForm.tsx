@@ -13,6 +13,8 @@ export type TransferLabels = {
   pax: string;
   phone: string;
   phonePh: string;
+  refCode: string;
+  refHint: string;
   submit: string;
   opening: string;
 };
@@ -31,6 +33,7 @@ export function TransferForm({
   const [pax, setPax] = useState("2");
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ref, setRef] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -44,12 +47,13 @@ export function TransferForm({
       else window.location.href = url;
     };
     try {
-      const url = await submitInquiry({
+      const { url, refCode } = await submitInquiry({
         type: "transfer",
         title: `Airport → ${to}`,
         phone,
         payload: { from: "Lombok Airport", to, date, pax },
       });
+      setRef(refCode);
       go(url);
     } catch {
       go(waTransfer("Lombok Airport", to, date, pax, number));
@@ -119,13 +123,19 @@ export function TransferForm({
           type="tel"
           inputMode="tel"
           autoComplete="tel"
-          required
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder={labels.phonePh}
           className="mt-2 w-full rounded-2xl border border-black/10 px-4 py-3.5"
         />
       </div>
+
+      {ref && (
+        <p role="status" className="mt-6 rounded-2xl bg-ocean/10 px-4 py-3.5 text-sm leading-6">
+          <span className="font-extrabold">{labels.refCode}: {ref}</span>
+          <span className="block font-normal text-black/55">{labels.refHint}</span>
+        </p>
+      )}
 
       <button
         type="submit"

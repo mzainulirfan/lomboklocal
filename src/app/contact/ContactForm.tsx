@@ -13,6 +13,8 @@ export type ContactLabels = {
   msgPh: string;
   phone: string;
   phonePh: string;
+  refCode: string;
+  refHint: string;
   submit: string;
   opening: string;
   topics: string[];
@@ -24,6 +26,7 @@ export function ContactForm({ number, labels }: { number: string; labels: Contac
   const [topic, setTopic] = useState(labels.topics[0]);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ref, setRef] = useState<string | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -35,13 +38,14 @@ export function ContactForm({ number, labels }: { number: string; labels: Contac
       else window.location.href = url;
     };
     try {
-      const url = await submitInquiry({
+      const { url, refCode } = await submitInquiry({
         type: "contact",
         title: topic,
         name: name || undefined,
         phone,
         payload: { message },
       });
+      setRef(refCode);
       go(url);
     } catch {
       go(
@@ -75,7 +79,6 @@ export function ContactForm({ number, labels }: { number: string; labels: Contac
         type="tel"
         inputMode="tel"
         autoComplete="tel"
-        required
         value={phone}
         onChange={(e) => setPhone(e.target.value)}
         placeholder={labels.phonePh}
@@ -105,6 +108,12 @@ export function ContactForm({ number, labels }: { number: string; labels: Contac
         placeholder={labels.msgPh}
         className={input}
       />
+      {ref && (
+        <p role="status" className="mt-6 rounded-2xl bg-ocean/10 px-4 py-3.5 text-sm leading-6">
+          <span className="font-extrabold">{labels.refCode}: {ref}</span>
+          <span className="block font-normal text-black/55">{labels.refHint}</span>
+        </p>
+      )}
       <button
         type="submit"
         disabled={busy}

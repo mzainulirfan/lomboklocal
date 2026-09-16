@@ -14,12 +14,14 @@ export function InquiryButton({
   className,
   children,
   busyLabel = "Membuka…",
+  onDone,
 }: {
   inquiry: InquiryInput;
   fallbackHref: string;
   className?: string;
   children: ReactNode;
   busyLabel?: string;
+  onDone?: (refCode: string) => void;
 }) {
   const [busy, setBusy] = useState(false);
 
@@ -33,7 +35,8 @@ export function InquiryButton({
       else window.location.href = url;
     };
     try {
-      const url = await submitInquiry(inquiry);
+      const { url, refCode } = await submitInquiry(inquiry);
+      onDone?.(refCode);
       go(url);
     } catch {
       go(fallbackHref);

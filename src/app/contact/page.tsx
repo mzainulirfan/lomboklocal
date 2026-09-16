@@ -53,7 +53,7 @@ export default async function ContactPage() {
               </div>
             </div>
 
-            <ContactForm number={settings.whatsapp_number} labels={{ ...t, phone: dict.common.phone, phonePh: dict.common.phonePh }} />
+            <ContactForm number={settings.whatsapp_number} labels={{ ...t, phone: dict.common.phone, phonePh: dict.common.phonePh, refCode: dict.common.refCode, refHint: dict.common.refHint }} />
           </div>
         </Container>
       </main>

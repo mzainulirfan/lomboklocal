@@ -18,7 +18,9 @@ const en = {
   toggle: { label: "Bahasa / Language" },
   common: {
     phone: "WhatsApp number",
-    phonePh: "0812…",
+    phonePh: "0812… (optional)",
+    refCode: "Your booking code",
+    refHint: "Mention this code in chat so we can find your request faster.",
   },
   home: {
     eyebrow: "Local travel • Lombok, Indonesia",
@@ -146,7 +148,9 @@ const en = {
     available: "Available",
     fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
     phone: "WhatsApp number",
-    phonePh: "0812…",
+    phonePh: "0812… (optional)",
+    refCode: "Your booking code",
+    refHint: "Mention this code in chat so we can find your request faster.",
   },
   car: {
     label: "Rental · Car",
@@ -163,7 +167,9 @@ const en = {
     available: "Available",
     fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
     phone: "WhatsApp number",
-    phonePh: "0812…",
+    phonePh: "0812… (optional)",
+    refCode: "Your booking code",
+    refHint: "Mention this code in chat so we can find your request faster.",
   },
   transfer: {
     label: "Transfer",
@@ -271,7 +277,9 @@ const id: Dict = {
   toggle: { label: "Bahasa / Language" },
   common: {
     phone: "Nomor WhatsApp",
-    phonePh: "0812…",
+    phonePh: "0812… (opsional)",
+    refCode: "Kode bookingmu",
+    refHint: "Sebutkan kode ini saat chat agar permintaanmu cepat ketemu.",
   },
   home: {
     eyebrow: "Travel lokal • Lombok, Indonesia",
@@ -399,7 +407,9 @@ const id: Dict = {
     available: "Tersedia",
     fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
     phone: "Nomor WhatsApp",
-    phonePh: "0812…",
+    phonePh: "0812… (opsional)",
+    refCode: "Kode bookingmu",
+    refHint: "Sebutkan kode ini saat chat agar permintaanmu cepat ketemu.",
   },
   car: {
     label: "Rental · Mobil",
@@ -416,7 +426,9 @@ const id: Dict = {
     available: "Tersedia",
     fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
     phone: "Nomor WhatsApp",
-    phonePh: "0812…",
+    phonePh: "0812… (opsional)",
+    refCode: "Kode bookingmu",
+    refHint: "Sebutkan kode ini saat chat agar permintaanmu cepat ketemu.",
   },
   transfer: {
     label: "Transfer",

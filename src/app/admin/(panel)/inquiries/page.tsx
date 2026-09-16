@@ -15,6 +15,7 @@ type InquiryRow = {
   title: string;
   name: string | null;
   phone: string | null;
+  ref_code: string | null;
   status: string;
   payload: Record<string, string>;
   created_at: string;
@@ -96,7 +97,7 @@ export default async function InquiriesPage({
   }
   if (query) {
     rows = rows.filter((r) =>
-      `${r.title} ${r.name ?? ""} ${Object.values(r.payload ?? {}).join(" ")}`.toLowerCase().includes(query)
+      `${r.title} ${r.name ?? ""} ${r.phone ?? ""} ${r.ref_code ?? ""} ${Object.values(r.payload ?? {}).join(" ")}`.toLowerCase().includes(query)
     );
   }
 
@@ -118,7 +119,7 @@ export default async function InquiriesPage({
           <input
             name="q"
             defaultValue={sp.q ?? ""}
-            placeholder="Cari nama, judul, detail…"
+            placeholder="Cari nama, nomor, kode, detail…"
             className="w-full rounded-full border border-black/10 bg-white py-3 pl-11 pr-4 text-sm font-bold placeholder:font-normal placeholder:text-black/35"
           />
         </div>
@@ -215,6 +216,11 @@ export default async function InquiriesPage({
                       <span className={cn("h-1.5 w-1.5 rounded-full", typeDot[r.type] ?? "bg-black/30")} />
                       {typeLabel[r.type] ?? r.type}
                     </span>
+                    {r.ref_code ? (
+                      <span className="rounded-full bg-ink px-2.5 py-1 text-white">{r.ref_code}</span>
+                    ) : (
+                      <span className="rounded-full bg-black/5 px-2.5 py-1 text-black/40">tanpa kode</span>
+                    )}
                     <span className={cn("rounded-full px-2.5 py-1", statusStyle[st])}>{st}</span>
                     <span className="text-black/40">{timeAgo(r.created_at)}</span>
                   </p>

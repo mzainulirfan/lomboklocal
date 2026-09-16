@@ -16,11 +16,12 @@ export function VehicleBooking({
   model: string;
   vehicleId: string;
   number: string;
-  labels: { date: string; days: string; phone: string; phonePh: string; bookUnit: string; opening: string; cancelNote: string; fullNote: string };
+  labels: { date: string; days: string; phone: string; phonePh: string; bookUnit: string; opening: string; cancelNote: string; fullNote: string; refCode: string; refHint: string };
 }) {
   const [date, setDate] = useState("");
   const [duration, setDuration] = useState("3");
   const [phone, setPhone] = useState("");
+  const [ref, setRef] = useState<string | null>(null);
   const [checked, setChecked] = useState<{ date: string; blocked: boolean } | null>(null);
 
   useEffect(() => {
@@ -72,7 +73,6 @@ export function VehicleBooking({
           type="tel"
           inputMode="tel"
           autoComplete="tel"
-          required
           aria-label={labels.phone}
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
@@ -89,10 +89,17 @@ export function VehicleBooking({
         inquiry={{ type: "vehicle", title: model, phone, payload: { date, duration } }}
         fallbackHref={waScooter(model, date, duration, "", number)}
         busyLabel={labels.opening}
+        onDone={setRef}
         className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-4 text-sm font-bold text-ink transition hover:bg-white/90"
       >
         {labels.bookUnit} <ArrowUpRight size={16} className="ml-2" />
       </InquiryButton>
+      {ref && (
+        <p role="status" className="mt-3 rounded-2xl bg-white/10 px-4 py-3 text-xs leading-5 text-white">
+          <span className="font-extrabold">{labels.refCode}: {ref}</span>
+          <span className="block font-normal text-white/55">{labels.refHint}</span>
+        </p>
+      )}
       <p className="mt-2.5 text-center text-xs text-white/35">
         {labels.cancelNote}
       </p>

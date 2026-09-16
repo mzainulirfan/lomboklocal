@@ -14,17 +14,22 @@ export function CustomTripPlanner({
   t,
   phoneLabel,
   phonePh,
+  refCodeLabel,
+  refHint,
 }: {
   number: string;
   t: Dict["custom"];
   phoneLabel: string;
   phonePh: string;
+  refCodeLabel: string;
+  refHint: string;
 }) {
   const [duration, setDuration] = useState(t.durations[1]);
   const [picked, setPicked] = useState<string[]>([t.interestsList[0], t.interestsList[5]]);
   const [style, setStyle] = useState(t.styles[2]);
   const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
+  const [ref, setRef] = useState<string | null>(null);
 
   const plan = useMemo(() => {
     const days = parseInt(duration, 10) || 5;
@@ -60,7 +65,8 @@ export function CustomTripPlanner({
       else window.location.href = url;
     };
     try {
-      const url = await submitInquiry({ type: "custom", title: `${duration} · ${style}`, phone, payload });
+      const { url, refCode } = await submitInquiry({ type: "custom", title: `${duration} · ${style}`, phone, payload });
+      setRef(refCode);
       go(url);
     } catch {
       go(fallbackHref);
@@ -137,13 +143,18 @@ export function CustomTripPlanner({
             type="tel"
             inputMode="tel"
             autoComplete="tel"
-            required
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             placeholder={phonePh}
             className="mt-3 w-full rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-bold text-white placeholder:text-white/30 [color-scheme:dark]"
           />
         </div>
+        {ref && (
+          <p role="status" className="rounded-2xl bg-white/10 px-4 py-3.5 text-sm leading-6">
+            <span className="font-extrabold">{refCodeLabel}: {ref}</span>
+            <span className="block font-normal text-white/55">{refHint}</span>
+          </p>
+        )}
         <button
           type="button"
           onClick={discuss}

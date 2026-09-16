@@ -60,6 +60,8 @@ export type CardLabels = {
   cancelNote: string;
   available: string;
   fullNote: string;
+  refCode: string;
+  refHint: string;
 };
 
 export async function VehicleCard({
