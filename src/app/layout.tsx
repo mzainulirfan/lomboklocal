@@ -5,6 +5,7 @@ import { SiteFooter, MobileCTA } from "@/components/layout";
 import { HideOnAdmin } from "@/components/HideOnAdmin";
 import { Analytics } from "@/components/Analytics";
 import { siteUrl } from "@/lib/site";
+import { getLocale } from "@/i18n/dictionaries";
 
 const jakarta = Plus_Jakarta_Sans({
   variable: "--font-sans",
@@ -27,9 +28,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const locale = await getLocale();
   return (
-    <html lang="en" className={`${jakarta.variable} h-full antialiased`}>
+    <html lang={locale} className={`${jakarta.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-sand text-ink">
         {children}
         <SiteFooter />

@@ -9,6 +9,7 @@ import { getTours } from "@/lib/tours";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral } from "@/lib/whatsapp";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Lombok Local — Explore Lombok Your Way",
@@ -16,16 +17,14 @@ export const metadata: Metadata = {
     "Tours, scooter rental, car rental and local experiences in Lombok. Transparent pricing, local team, book via WhatsApp.",
 };
 
-const services = [
-  { icon: Bike, title: "Scooter Rental", desc: "Freedom to explore.", href: "/rental/scooter" },
-  { icon: Car, title: "Car Rental", desc: "Comfort on your route.", href: "/rental/car" },
-  { icon: Ship, title: "Private Tours", desc: "Made around you.", href: "/tours" },
-  { icon: Van, title: "Airport Transfer", desc: "Start easy. Arrive relaxed.", href: "/transfer" },
-];
-
-const experiences = ["Surf & Ocean", "Sasak Culture", "Waterfall Adventure", "Local Food"];
+const serviceIcons = [Bike, Car, Ship, Van];
+const serviceHrefs = ["/rental/scooter", "/rental/car", "/tours", "/transfer"];
 
 export default async function Home() {
+  const locale = await getLocale();
+  const dict = getDict(locale);
+  const t = dict.home;
+  const cardLabels = dict.scooter;
   const scooters = (await getVehicles("scooter")).slice(0, 2);
   const featuredTours = (await getTours()).slice(0, 2);
   const number = await getWhatsappNumber();
@@ -49,28 +48,28 @@ export default async function Home() {
           <Container className="relative flex min-h-[780px] items-end pb-16 pt-32 lg:min-h-[860px] lg:pb-24">
             <div className="max-w-5xl">
               <p className="mb-7 text-xs font-bold uppercase tracking-[0.28em] text-white/70">
-                Local travel • Lombok, Indonesia
+                {t.eyebrow}
               </p>
               <h1 className="display max-w-4xl text-[clamp(3rem,12vw,10rem)] font-extrabold uppercase">
-                Discover
+                {t.titleA}
                 <br />
-                Lombok.
+                {t.titleB}
                 <br />
-                <span className="text-white/55">Your way.</span>
+                <span className="text-white/55">{t.titleC}</span>
               </h1>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row">
                 <Button href="/tours" variant="light">
-                  Explore Lombok <ArrowUpRight size={16} className="ml-3" />
+                  {t.explore} <ArrowUpRight size={16} className="ml-3" />
                 </Button>
                 <Button href="/rental/scooter" variant="outline-light">
-                  Rent a Scooter
+                  {t.rent}
                 </Button>
               </div>
             </div>
             <div className="absolute bottom-8 right-5 hidden max-w-xs text-right text-sm leading-6 text-white/70 lg:right-12 lg:block">
-              Not just a trip.
+              {t.storyA}
               <br />
-              <span className="text-white">It&apos;s your Lombok story.</span>
+              <span className="text-white">{t.storyB}</span>
             </div>
           </Container>
         </section>
@@ -78,10 +77,12 @@ export default async function Home() {
         {/* QUICK SERVICES */}
         <section className="border-b border-black/10 bg-white">
           <div className="mx-auto grid max-w-[1440px] grid-cols-2 lg:grid-cols-4">
-            {services.map((s, i) => (
+            {t.services.map((s, i) => {
+              const Icon = serviceIcons[i];
+              return (
               <Link
                 key={s.title}
-                href={s.href}
+                href={serviceHrefs[i]}
                 className={`group border-black/10 p-7 transition hover:bg-sand lg:p-10 ${
                   i < 2 ? "border-b lg:border-b-0" : ""
                 } ${i % 2 === 0 ? "border-r" : ""} ${i === 1 ? "lg:border-r" : ""} ${
@@ -89,13 +90,14 @@ export default async function Home() {
                 }`}
               >
                 <div className="mb-12 flex items-start justify-between">
-                  <s.icon size={30} strokeWidth={1.75} />
+                  <Icon size={30} strokeWidth={1.75} />
                   <ArrowUpRight size={20} className="transition group-hover:translate-x-1" />
                 </div>
                 <h2 className="text-lg font-bold">{s.title}</h2>
                 <p className="mt-2 text-sm text-black/50">{s.desc}</p>
               </Link>
-            ))}
+              );
+            })}
           </div>
         </section>
 
@@ -104,16 +106,15 @@ export default async function Home() {
           <Container className="py-24 lg:py-32">
             <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
               <div>
-                <SectionLabel>01 / Explore</SectionLabel>
+                <SectionLabel>{t.toursLabel}</SectionLabel>
                 <h2 className="display text-6xl font-extrabold uppercase sm:text-8xl">
-                  Go where
+                  {t.toursA}
                   <br />
-                  you feel.
+                  {t.toursB}
                 </h2>
               </div>
               <p className="max-w-sm text-sm leading-6 text-black/55">
-                From hidden beaches to mountain villages. Choose a route, or let us build one
-                around your pace.
+                {t.toursDesc}
               </p>
             </div>
             <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -125,7 +126,7 @@ export default async function Home() {
                 href="/tours"
                 className="inline-flex items-center gap-3 border-b border-ink pb-2 text-sm font-bold"
               >
-                View all tours <ArrowUpRight size={16} />
+                {t.viewAll} <ArrowUpRight size={16} />
               </Link>
             </div>
           </Container>
@@ -136,23 +137,22 @@ export default async function Home() {
           <Container className="py-24 lg:py-32">
             <div className="grid gap-16 lg:grid-cols-[.8fr_1.2fr] lg:items-center">
               <div>
-                <SectionLabel tone="text-white/40">02 / Rental</SectionLabel>
+                <SectionLabel tone="text-white/40">{t.rentalLabel}</SectionLabel>
                 <h2 className="display text-6xl font-extrabold uppercase sm:text-8xl">
-                  Your ride.
+                  {t.rentalA}
                   <br />
-                  <span className="text-white/40">Your freedom.</span>
+                  <span className="text-white/40">{t.rentalB}</span>
                 </h2>
                 <p className="mt-8 max-w-md text-sm leading-7 text-white/55">
-                  Pick up in Kuta or have your ride delivered. Helmets, phone holder and local
-                  support included.
+                  {t.rentalDesc}
                 </p>
                 <Button href="/rental/scooter" variant="light" className="mt-9">
-                  Check availability <ArrowUpRight size={16} className="ml-3" />
+                  {t.rentalCta} <ArrowUpRight size={16} className="ml-3" />
                 </Button>
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {scooters.map((v, i) => (
-                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} />
+                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} labels={cardLabels} />
                 ))}
               </div>
             </div>
@@ -164,20 +164,19 @@ export default async function Home() {
           <Container className="py-24 lg:py-32">
             <div className="grid gap-14 lg:grid-cols-[.7fr_1.3fr]">
               <div>
-                <SectionLabel tone="text-coral">03 / Local</SectionLabel>
+                <SectionLabel tone="text-coral">{t.expLabel}</SectionLabel>
                 <h2 className="display text-6xl font-extrabold uppercase sm:text-8xl">
-                  Meet
+                  {t.expA}
                   <br />
-                  Lombok.
+                  {t.expB}
                 </h2>
               </div>
               <div>
                 <p className="max-w-2xl text-2xl font-medium leading-snug tracking-tight sm:text-4xl">
-                  Go beyond the postcard. Eat with locals, chase waterfalls, learn to surf, or
-                  simply find a beach with nobody around.
+                  {t.expDesc}
                 </p>
                 <div className="mt-14 divide-y divide-black/10 border-y border-black/10">
-                  {experiences.map((e) => (
+                  {t.expItems.map((e) => (
                     <Link key={e} href="/experiences" className="group flex items-center justify-between py-6">
                       <span className="text-xl font-bold">{e}</span>
                       <ArrowUpRight size={20} className="transition group-hover:translate-x-2" />
@@ -192,16 +191,11 @@ export default async function Home() {
         {/* WHY US */}
         <section id="about" className="bg-sand">
           <Container className="py-24 lg:py-32">
-            <SectionLabel tone="text-black/40">04 / Why us</SectionLabel>
+            <SectionLabel tone="text-black/40">{t.whyLabel}</SectionLabel>
             <div className="grid gap-10 border-t border-black/10 pt-10 md:grid-cols-2 lg:grid-cols-4">
-              {[
-                { n: "01", t: "Local Team", d: "People who know the island beyond the tourist map." },
-                { n: "02", t: "Easy Booking", d: "Ask a question or book directly through WhatsApp." },
-                { n: "03", t: "Clear Pricing", d: "Know what you're paying for before the trip begins." },
-                { n: "04", t: "Flexible Trips", d: "Your itinerary can move at your pace." },
-              ].map((f) => (
-                <div key={f.n}>
-                  <span className="text-sm font-bold text-ocean">{f.n}</span>
+              {t.why.map((f, i) => (
+                <div key={f.t}>
+                  <span className="text-sm font-bold text-ocean">0{i + 1}</span>
                   <h3 className="mt-8 text-xl font-bold">{f.t}</h3>
                   <p className="mt-3 text-sm leading-6 text-black/50">{f.d}</p>
                 </div>
@@ -213,21 +207,36 @@ export default async function Home() {
         {/* REVIEWS */}
         <section className="bg-white">
           <Container className="py-24 lg:py-32">
-            <SectionLabel tone="text-black/40">04b / Reviews</SectionLabel>
-            <div className="grid gap-5 md:grid-cols-3">
-              {[
-                { q: "Everything was easy from airport pickup until our last day. It felt like having a local friend in Lombok.", n: "Sarah · Australia" },
-                { q: "Scooter delivered to our hotel in Kuta, helmets included. Rode south for 5 days, zero issues.", n: "Daan · Netherlands" },
-                { q: "Custom 3-day trip: beaches, waterfall, snorkeling. Flexible pace, clear price upfront.", n: "Aina · Malaysia" },
-              ].map((r) => (
-                <figure key={r.n} className="flex flex-col justify-between rounded-[2rem] bg-sand p-8">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <SectionLabel tone="text-black/40">{t.reviewsLabel}</SectionLabel>
+                <h2 className="display text-5xl font-extrabold uppercase sm:text-7xl">
+                  {t.reviewsTitle}
+                </h2>
+              </div>
+              <p className="flex items-center gap-2 text-sm font-bold">
+                <span className="tracking-[.2em]">★★★★★</span>
+                <span className="text-black/50">{t.reviewsRating}</span>
+              </p>
+            </div>
+            <div className="mt-12 grid gap-5 md:grid-cols-3">
+              {t.reviews.map((r) => (
+                <figure key={r.n} className="flex flex-col justify-between rounded-[2rem] bg-sand p-8 transition hover:-translate-y-1">
                   <div>
-                    <div className="text-lg tracking-[.25em]">★★★★★</div>
+                    <div className="text-base tracking-[.25em]">★★★★★</div>
                     <blockquote className="mt-5 text-lg font-semibold leading-snug tracking-tight">
                       &ldquo;{r.q}&rdquo;
                     </blockquote>
                   </div>
-                  <figcaption className="mt-6 text-sm text-black/50">{r.n}</figcaption>
+                  <figcaption className="mt-7 flex items-center gap-3.5 border-t border-black/10 pt-5">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-ocean text-base font-extrabold text-white">
+                      {r.n.charAt(0)}
+                    </span>
+                    <span>
+                      <span className="block text-sm font-extrabold">{r.n} · {r.c}</span>
+                      <span className="mt-0.5 block text-xs font-bold uppercase tracking-widest text-black/40">{r.s}</span>
+                    </span>
+                  </figcaption>
                 </figure>
               ))}
             </div>
@@ -258,18 +267,17 @@ export default async function Home() {
           <div className="absolute -right-5 -top-16 h-64 w-64 rounded-full border border-white/10" />
           <Container className="relative py-24 lg:py-32">
             <div className="max-w-4xl">
-              <SectionLabel tone="text-white/50">05 / Let&apos;s go</SectionLabel>
+              <SectionLabel tone="text-white/50">{t.ctaLabel}</SectionLabel>
               <h2 className="display text-6xl font-extrabold uppercase sm:text-8xl">
-                Ready to
+                {t.ctaA}
                 <br />
-                explore?
+                {t.ctaB}
               </h2>
               <p className="mt-8 max-w-md text-sm leading-7 text-white/65">
-                Tell us what you&apos;re looking for. We&apos;ll help you build a Lombok trip that
-                makes sense for you.
+                {t.ctaDesc}
               </p>
               <Button href={waGeneral(number)} variant="light" className="mt-10">
-                Talk to a local <ArrowUpRight size={16} className="ml-3" />
+                {t.ctaButton} <ArrowUpRight size={16} className="ml-3" />
               </Button>
             </div>
           </Container>

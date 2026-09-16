@@ -3,9 +3,24 @@ import { ArrowUpRight } from "lucide-react";
 import { waGeneral } from "@/lib/whatsapp";
 import { getSiteSettings, getWhatsappNumber } from "@/lib/settings";
 import { MobileMenu } from "@/components/MobileMenu";
+import { LocaleToggle } from "@/components/LocaleToggle";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export async function SiteHeader({ dark = true }: { dark?: boolean }) {
   const number = await getWhatsappNumber();
+  const locale = await getLocale();
+  const t = getDict(locale);
+  const menuLinks = [
+    { href: "/tours", label: t.nav.tours },
+    { href: "/rental/scooter", label: `${t.nav.rental} · Scooter` },
+    { href: "/rental/car", label: `${t.nav.rental} · Car` },
+    { href: "/experiences", label: t.nav.experiences },
+    { href: "/transfer", label: t.nav.transfer },
+    { href: "/about", label: t.nav.about },
+    { href: "/contact", label: t.contact.label },
+    { href: "/faq", label: t.faqPage.label },
+    { href: "/blog", label: t.blog.label },
+  ];
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
@@ -20,21 +35,27 @@ export async function SiteHeader({ dark = true }: { dark?: boolean }) {
             dark ? "text-white/90" : "text-ink/70"
           }`}
         >
-          <Link href="/tours" className="transition hover:opacity-70">Tours</Link>
-          <Link href="/rental/scooter" className="transition hover:opacity-70">Rental</Link>
-          <Link href="/experiences" className="transition hover:opacity-70">Experiences</Link>
-          <Link href="/transfer" className="transition hover:opacity-70">Transfer</Link>
-          <Link href="/about" className="transition hover:opacity-70">About</Link>
+          <Link href="/tours" className="transition hover:opacity-70">{t.nav.tours}</Link>
+          <Link href="/rental/scooter" className="transition hover:opacity-70">{t.nav.rental}</Link>
+          <Link href="/experiences" className="transition hover:opacity-70">{t.nav.experiences}</Link>
+          <Link href="/transfer" className="transition hover:opacity-70">{t.nav.transfer}</Link>
+          <Link href="/about" className="transition hover:opacity-70">{t.nav.about}</Link>
         </nav>
-        <a
-          href={waGeneral(number)}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hidden rounded-full bg-white px-5 py-3 text-sm font-bold text-ink transition hover:bg-white/90 sm:block"
-        >
-          Book a Trip
-        </a>
-        <MobileMenu dark={dark} bookHref={waGeneral(number)} />
+        <div className="hidden items-center gap-3 md:flex">
+          <LocaleToggle current={locale} dark={dark} />
+          <a
+            href={waGeneral(number)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full bg-white px-5 py-3 text-sm font-bold text-ink transition hover:bg-white/90"
+          >
+            {t.header.book}
+          </a>
+        </div>
+        <div className="flex items-center gap-2 md:hidden">
+          <LocaleToggle current={locale} dark={dark} />
+          <MobileMenu dark={dark} bookHref={waGeneral(number)} links={menuLinks} openLabel={t.menu.open} closeLabel={t.menu.close} navLabel={t.menu.navLabel} bookLabel={t.menu.book} />
+        </div>
       </div>
     </header>
   );
@@ -43,6 +64,7 @@ export async function SiteHeader({ dark = true }: { dark?: boolean }) {
 export async function SiteFooter() {
   const settings = await getSiteSettings();
   const number = settings.whatsapp_number;
+  const t = getDict(await getLocale());
   return (
     <footer className="bg-ink text-white">
       <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:px-12">
@@ -52,7 +74,7 @@ export async function SiteFooter() {
               LOMBOK<span className="font-normal">LOCAL</span>
             </div>
             <p className="mt-3 max-w-xs text-sm leading-6 text-white/40">
-              Tours, rentals and local experiences in Lombok.
+              {t.footer.tagline}
             </p>
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
               <Link href="/tours" className="hover:text-white">Tours</Link>
@@ -87,6 +109,7 @@ export async function SiteFooter() {
 
 export async function MobileCTA() {
   const number = await getWhatsappNumber();
+  const t = getDict(await getLocale());
   return (
     <div className="fixed inset-x-4 bottom-4 z-50 md:hidden">
       <a
@@ -95,7 +118,7 @@ export async function MobileCTA() {
         rel="noopener noreferrer"
         className="flex items-center justify-between rounded-full bg-ink px-6 py-4 text-sm font-bold text-white shadow-2xl"
       >
-        <span>WhatsApp a local</span>
+        <span>{t.mobileCta}</span>
         <ArrowUpRight size={18} />
       </a>
     </div>

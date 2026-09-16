@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, Check, Clock, MapPin, X } from "lucide-react";
+import { ArrowLeft, Check, Clock, MapPin, X } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container } from "@/components/ui";
-import { InquiryButton } from "@/components/InquiryButton";
+import { TourBooking } from "./TourBooking";
 import { TourCard } from "@/components/cards";
 import { tours as fallbackTours } from "@/content/site";
 import { getTourBySlug, getTours } from "@/lib/tours";
-import { waTour } from "@/lib/whatsapp";
-import { getWhatsappNumber } from "@/lib/settings";
+import { getUsdRate, getWhatsappNumber } from "@/lib/settings";
+import { formatUSD } from "@/lib/format";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export async function generateStaticParams() {
   return fallbackTours.map((t) => ({ slug: t.slug }));
@@ -40,6 +41,8 @@ export default async function TourDetail({
   const tour = await getTourBySlug(slug);
   if (!tour) notFound();
   const number = await getWhatsappNumber();
+  const usd = formatUSD(tour.priceAmount, await getUsdRate());
+  const t = getDict(await getLocale()).tourDetail;
   const others = (await getTours()).filter((t) => t.slug !== slug).slice(0, 2);
 
   return (
@@ -52,7 +55,7 @@ export default async function TourDetail({
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/30" />
           <Container className="relative flex min-h-[70vh] flex-col justify-end pb-14 pt-32">
             <Link href="/tours" className="mb-8 inline-flex items-center gap-2 text-sm text-white/70 hover:text-white">
-              <ArrowLeft size={16} /> All tours
+              <ArrowLeft size={16} /> {t.allTours}
             </Link>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/60">
               {tour.area} · {tour.duration} · {tour.type}
@@ -66,7 +69,7 @@ export default async function TourDetail({
 
         <Container className="grid gap-12 py-16 lg:grid-cols-[1.4fr_.8fr] lg:py-24">
           <div>
-            <h2 className="text-2xl font-extrabold tracking-tight">Itinerary</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight">{t.itinerary}</h2>
             <ol className="mt-8 space-y-0 border-l border-black/10">
               {tour.itinerary.map((s) => (
                 <li key={s.time} className="relative pb-8 pl-8">
@@ -79,7 +82,7 @@ export default async function TourDetail({
 
             <div className="mt-8 grid gap-6 sm:grid-cols-2">
               <div className="rounded-3xl bg-white p-7">
-                <h3 className="font-bold">Included</h3>
+                <h3 className="font-bold">{t.included}</h3>
                 <ul className="mt-4 space-y-2.5">
                   {tour.included.map((i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-black/65">
@@ -89,7 +92,7 @@ export default async function TourDetail({
                 </ul>
               </div>
               <div className="rounded-3xl bg-white p-7">
-                <h3 className="font-bold">Not included</h3>
+                <h3 className="font-bold">{t.notIncluded}</h3>
                 <ul className="mt-4 space-y-2.5">
                   {tour.excluded.map((i) => (
                     <li key={i} className="flex items-start gap-2 text-sm text-black/65">
@@ -104,26 +107,23 @@ export default async function TourDetail({
           {/* Booking card — sticky CTA per PRD */}
           <aside>
             <div className="rounded-[2rem] bg-ink p-8 text-white lg:sticky lg:top-8">
-              <p className="text-xs uppercase tracking-widest text-white/50">From</p>
-              <p className="mt-2 text-4xl font-extrabold tracking-tight">{tour.price}</p>
+              <p className="text-xs uppercase tracking-widest text-white/50">{t.from}</p>
+              <p className="mt-2 text-4xl font-extrabold tracking-tight">
+                {tour.price}
+                {usd && <span className="ml-3 align-middle text-lg font-bold text-white/40">{usd}</span>}
+              </p>
               <p className="mt-1 text-sm text-white/50">{tour.priceNote}</p>
               <div className="mt-6 space-y-3 border-t border-white/10 pt-6 text-sm text-white/65">
                 <p className="flex items-center gap-2">
-                  <Clock size={15} /> {tour.duration} · flexible start
+                  <Clock size={15} /> {tour.duration} · {t.flexible}
                 </p>
                 <p className="flex items-center gap-2">
-                  <MapPin size={15} /> Hotel pickup included
+                  <MapPin size={15} /> {t.pickup}
                 </p>
               </div>
-              <InquiryButton
-                inquiry={{ type: "tour", title: tour.title, payload: {} }}
-                fallbackHref={waTour(tour.title, "", "", number)}
-                className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-bold text-ink transition hover:-translate-y-0.5"
-              >
-                Book this trip <ArrowUpRight size={16} className="ml-2" />
-              </InquiryButton>
-              <p className="mt-4 text-center text-xs text-white/40">
-                Confirmed manually via WhatsApp · no prepayment
+              <TourBooking tourTitle={tour.title} number={number} labels={{ date: t.date, guests: t.guests, book: t.book, opening: t.opening }} />
+              <p className="mt-4 text-center text-xs leading-5 text-white/40">
+                {t.note}
               </p>
             </div>
           </aside>
@@ -131,7 +131,7 @@ export default async function TourDetail({
 
         {others.length > 0 && (
           <Container className="pb-24">
-            <h2 className="text-2xl font-extrabold tracking-tight">You may also like</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight">{t.related}</h2>
             <div className="mt-8 grid gap-6 md:grid-cols-2">
               {others.map((t) => (
                 <TourCard key={t.slug} tour={t} />

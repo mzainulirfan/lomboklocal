@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, Button } from "@/components/ui";
 import { posts } from "@/content/blog";
+import { getDict, getLocale, type Locale } from "@/i18n/dictionaries";
 import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral } from "@/lib/whatsapp";
 
@@ -32,6 +33,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = posts.find((p) => p.slug === slug);
   if (!post) notFound();
+  const locale: Locale = await getLocale();
+  const t = getDict(locale).blog;
+  const nav = getDict(locale).nav;
   const number = await getWhatsappNumber();
 
   const jsonLd = {
@@ -49,7 +53,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       <main className="bg-sand pt-32">
         <Container className="max-w-3xl pb-24">
           <Link href="/blog" className="inline-flex items-center gap-2 text-sm text-black/50 hover:text-ink">
-            <ArrowLeft size={16} /> All guides
+            <ArrowLeft size={16} /> {t.allGuides}
           </Link>
           <p className="mt-8 text-xs font-bold uppercase tracking-widest text-ocean">
             {post.keyword} · {post.readTime} · {post.date}
@@ -71,14 +75,14 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
           {/* Internal linking — PRD §21 */}
           <div className="mt-12 grid gap-3 rounded-[2rem] bg-white p-7 text-sm sm:grid-cols-3">
-            <Link href="/tours" className="font-bold hover:text-ocean">Browse tours ↗</Link>
-            <Link href="/rental/scooter" className="font-bold hover:text-ocean">Rent a scooter ↗</Link>
-            <Link href="/transfer" className="font-bold hover:text-ocean">Book transfer ↗</Link>
+            <Link href="/tours" className="font-bold hover:text-ocean">{nav.tours} ↗</Link>
+            <Link href="/rental/scooter" className="font-bold hover:text-ocean">{nav.rental} ↗</Link>
+            <Link href="/transfer" className="font-bold hover:text-ocean">{nav.transfer} ↗</Link>
           </div>
 
           <div className="mt-10 text-center">
             <Button href={waGeneral(number)} variant="dark">
-              Plan this with a local <ArrowUpRight size={16} className="ml-2" />
+              {t.planWithLocal} <ArrowUpRight size={16} className="ml-2" />
             </Button>
           </div>
         </Container>

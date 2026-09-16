@@ -5,6 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { posts } from "@/content/blog";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -12,18 +13,19 @@ export const metadata: Metadata = {
     "Lombok travel guides: scooter rental prices, south Lombok itineraries, airport transfers and private tours.",
 };
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const t = getDict(await getLocale()).blog;
   return (
     <>
       <SiteHeader dark={false} />
       <main className="bg-sand pt-32">
         <Container className="pb-24">
-          <SectionLabel>Blog</SectionLabel>
+          <SectionLabel>{t.label}</SectionLabel>
           <h1 className="display max-w-3xl text-5xl font-extrabold uppercase sm:text-7xl">
-            Lombok, explained.
+            {t.title}
           </h1>
           <p className="mt-6 max-w-md text-sm leading-7 text-black/55">
-            Practical guides written by locals — prices, routes and honest tips.
+            {t.desc}
           </p>
           <div className="mt-14 grid gap-6 md:grid-cols-2">
             {posts.map((p) => (
@@ -43,7 +45,7 @@ export default function BlogPage() {
                 <h2 className="mt-2 text-2xl font-extrabold tracking-tight">{p.title}</h2>
                 <p className="mt-2 text-sm leading-6 text-black/55">{p.excerpt}</p>
                 <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold">
-                  Read <ArrowUpRight size={15} />
+                  {t.read} <ArrowUpRight size={15} />
                 </span>
               </Link>
             ))}

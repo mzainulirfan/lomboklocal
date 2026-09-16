@@ -3,22 +3,27 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { cn } from "@/lib/cn";
 
-const links = [
-  { href: "/tours", label: "Tours" },
-  { href: "/rental/scooter", label: "Scooter rental" },
-  { href: "/rental/car", label: "Car rental" },
-  { href: "/experiences", label: "Experiences" },
-  { href: "/transfer", label: "Transfer" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/blog", label: "Blog" },
-];
+export type MenuLink = { href: string; label: string };
 
 /** Hamburger + drawer navigasi mobile. */
-export function MobileMenu({ dark = true, bookHref }: { dark?: boolean; bookHref: string }) {
+export function MobileMenu({
+  dark = true,
+  bookHref,
+  links,
+  openLabel,
+  closeLabel,
+  navLabel,
+  bookLabel,
+}: {
+  dark?: boolean;
+  bookHref: string;
+  links: MenuLink[];
+  openLabel: string;
+  closeLabel: string;
+  navLabel: string;
+  bookLabel: string;
+}) {
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
@@ -33,18 +38,15 @@ export function MobileMenu({ dark = true, bookHref }: { dark?: boolean; bookHref
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="Buka menu"
+        aria-label={openLabel}
         aria-expanded={open}
-        className={cn(
-          "rounded-full p-2.5 transition active:bg-black/10",
-          dark ? "text-white" : "text-ink"
-        )}
+        className={`rounded-full p-2.5 transition active:bg-black/10 ${dark ? "text-white" : "text-ink"}`}
       >
         <Menu size={22} />
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[60] flex flex-col bg-ink text-white" role="dialog" aria-modal="true" aria-label="Menu navigasi">
+        <div className="fixed inset-0 z-[60] flex flex-col bg-ink text-white" role="dialog" aria-modal="true" aria-label={navLabel}>
           <div className="flex items-center justify-between px-5 py-5">
             <span className="text-lg font-extrabold tracking-tight">
               LOMBOK<span className="font-normal">LOCAL</span>
@@ -52,7 +54,7 @@ export function MobileMenu({ dark = true, bookHref }: { dark?: boolean; bookHref
             <button
               type="button"
               onClick={() => setOpen(false)}
-              aria-label="Tutup menu"
+              aria-label={closeLabel}
               className="rounded-full p-2.5 transition active:bg-white/10"
             >
               <X size={22} />
@@ -78,7 +80,7 @@ export function MobileMenu({ dark = true, bookHref }: { dark?: boolean; bookHref
               rel="noopener noreferrer"
               className="flex items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-bold text-ink"
             >
-              Book a Trip <ArrowUpRight size={16} className="ml-2" />
+              {bookLabel} <ArrowUpRight size={16} className="ml-2" />
             </a>
           </div>
         </div>

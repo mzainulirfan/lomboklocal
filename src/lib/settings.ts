@@ -9,6 +9,7 @@ export const DEFAULT_SETTINGS = {
   base_location: "Kuta, South Lombok · delivery & pickup available",
   instagram_url: "",
   google_maps_url: "",
+  usd_rate: "16000",
 } as const;
 
 /** Seluruh settings (cached per request). Fallback ke default bila DB belum siap. */
@@ -32,6 +33,13 @@ export async function getWhatsappNumber(): Promise<string> {
   return (await getSiteSettings()).whatsapp_number || WHATSAPP_NUMBER;
 }
 
+/** Kurs Rp per $1 untuk hint USD. */
+export async function getUsdRate(): Promise<number> {
+  const raw = (await getSiteSettings()).usd_rate ?? "";
+  const n = parseInt(String(raw).replace(/[^0-9]/g, ""), 10);
+  return Number.isFinite(n) && n > 0 ? n : 16000;
+}
+
 /** Semua settings mentah — untuk halaman admin. */
 export async function getAllSettingsAdmin(): Promise<{ key: string; value: string }[]> {
   const sb = supabasePublic();
@@ -47,4 +55,5 @@ export const SETTING_LABELS: Record<string, { label: string; hint: string }> = {
   base_location: { label: "Lokasi base", hint: "Cth Kuta, South Lombok." },
   instagram_url: { label: "Instagram URL", hint: "Link profil, cth https://instagram.com/… Kosongkan = disembunyikan." },
   google_maps_url: { label: "Google Maps URL", hint: "Link lokasi di Maps. Kosongkan = disembunyikan." },
+  usd_rate: { label: "Kurs USD (Rp per $1)", hint: "Untuk tampilan ≈ $… Cth 16000. Update berkala." },
 };

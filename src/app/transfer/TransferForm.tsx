@@ -6,7 +6,24 @@ import { submitInquiry } from "@/actions/inquiries";
 import { waTransfer } from "@/lib/whatsapp";
 import type { TransferRoute } from "@/lib/transfers";
 
-export function TransferForm({ routes, number }: { routes: TransferRoute[]; number: string }) {
+export type TransferLabels = {
+  from: string;
+  to: string;
+  date: string;
+  pax: string;
+  submit: string;
+  opening: string;
+};
+
+export function TransferForm({
+  routes,
+  number,
+  labels,
+}: {
+  routes: TransferRoute[];
+  number: string;
+  labels: TransferLabels;
+}) {
   const [to, setTo] = useState(routes[0]?.to ?? "Kuta Lombok");
   const [date, setDate] = useState("");
   const [pax, setPax] = useState("2");
@@ -40,12 +57,12 @@ export function TransferForm({ routes, number }: { routes: TransferRoute[]; numb
   return (
     <form className="rounded-[2rem] bg-white p-8" onSubmit={onSubmit}>
       <label className="block text-xs font-bold uppercase tracking-widest text-black/40">
-        From
+        {labels.from}
       </label>
       <p className="mt-2 rounded-2xl bg-sand px-4 py-3.5 font-bold">Lombok Airport</p>
 
       <label htmlFor="to" className="mt-6 block text-xs font-bold uppercase tracking-widest text-black/40">
-        To
+        {labels.to}
       </label>
       <select
         id="to"
@@ -63,7 +80,7 @@ export function TransferForm({ routes, number }: { routes: TransferRoute[]; numb
       <div className="mt-6 grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="date" className="block text-xs font-bold uppercase tracking-widest text-black/40">
-            Date
+            {labels.date}
           </label>
           <input
             id="date"
@@ -75,7 +92,7 @@ export function TransferForm({ routes, number }: { routes: TransferRoute[]; numb
         </div>
         <div>
           <label htmlFor="pax" className="block text-xs font-bold uppercase tracking-widest text-black/40">
-            Passengers
+            {labels.pax}
           </label>
           <input
             id="pax"
@@ -94,7 +111,7 @@ export function TransferForm({ routes, number }: { routes: TransferRoute[]; numb
         disabled={busy}
         className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-ocean px-7 py-4 text-sm font-bold text-white transition hover:-translate-y-0.5 hover:brightness-110 disabled:opacity-60"
       >
-        {busy ? "Membuka…" : <>Request transfer <ArrowUpRight size={16} className="ml-2" /></>}
+        {busy ? labels.opening : <>{labels.submit} <ArrowUpRight size={16} className="ml-2" /></>}
       </button>
     </form>
   );

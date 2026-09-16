@@ -6,6 +6,8 @@ export type Tour = {
   type: string;
   price: string;
   priceNote: string;
+  /** Nominal rupiah (untuk hint USD). */
+  priceAmount?: number;
   image: string;
   description: string;
   itinerary: { time: string; place: string }[];
@@ -21,6 +23,7 @@ export const tours: Tour[] = [
     duration: "1 day",
     type: "Private",
     price: "Rp 1.2M",
+    priceAmount: 1200000,
     priceNote: "per trip · up to 4 guests",
     image:
       "https://images.unsplash.com/photo-1539367628448-4bc5c9d171c8?auto=format&fit=crop&w=1600&q=85",
@@ -44,6 +47,7 @@ export const tours: Tour[] = [
     duration: "1 day",
     type: "Boat",
     price: "Rp 850K",
+    priceAmount: 850000,
     priceNote: "per person · min 2",
     image:
       "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1000&q=85",
@@ -66,6 +70,7 @@ export const tours: Tour[] = [
     duration: "1 day",
     type: "Private",
     price: "Rp 1.1M",
+    priceAmount: 1100000,
     priceNote: "per trip · up to 4 guests",
     image:
       "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1000&q=85",
@@ -136,8 +141,8 @@ export const cars: Vehicle[] = [
 ];
 
 export const transferRoutes = [
-  { from: "Lombok Airport", to: "Kuta Lombok", price: "Rp 250K" },
-  { from: "Lombok Airport", to: "Senggigi", price: "Rp 350K" },
-  { from: "Lombok Airport", to: "Mataram", price: "Rp 300K" },
-  { from: "Lombok Airport", to: "Bangsal Harbour", price: "Rp 450K" },
+  { from: "Lombok Airport", to: "Kuta Lombok", price: "Rp 250K", amount: 250000 },
+  { from: "Lombok Airport", to: "Senggigi", price: "Rp 350K", amount: 350000 },
+  { from: "Lombok Airport", to: "Mataram", price: "Rp 300K", amount: 300000 },
+  { from: "Lombok Airport", to: "Bangsal Harbour", price: "Rp 450K", amount: 450000 },
 ];

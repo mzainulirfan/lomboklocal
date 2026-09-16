@@ -13,11 +13,13 @@ export function InquiryButton({
   fallbackHref,
   className,
   children,
+  busyLabel = "Membuka…",
 }: {
   inquiry: InquiryInput;
   fallbackHref: string;
   className?: string;
   children: ReactNode;
+  busyLabel?: string;
 }) {
   const [busy, setBusy] = useState(false);
 
@@ -49,7 +51,7 @@ export function InquiryButton({
       aria-disabled={busy}
       className={className}
     >
-      {busy ? "Membuka…" : children}
+      {busy ? busyLabel : children}
     </a>
   );
 }

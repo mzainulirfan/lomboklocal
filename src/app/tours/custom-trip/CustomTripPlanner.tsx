@@ -5,38 +5,25 @@ import { ArrowUpRight } from "lucide-react";
 import { submitInquiry } from "@/actions/inquiries";
 import { waLink } from "@/lib/whatsapp";
 import { cn } from "@/lib/cn";
-
-const durations = ["2 days", "3 days", "4 days", "5+ days"];
-const interests = ["Beach", "Waterfall", "Surf", "Culture", "Food", "Snorkeling", "Adventure", "Relaxation"];
-const styles = ["Budget", "Comfort", "Private", "Adventure"];
-
-const suggestion: Record<string, string[]> = {
-  Beach: ["South Lombok beaches + Merese Hill"],
-  Waterfall: ["Sendang Gile + jungle walk"],
-  Surf: ["Kuta beginner surf + Gerupuk"],
-  Culture: ["Sasak village + market"],
-  Food: ["Warung crawl + night market"],
-  Snorkeling: ["Island boat + coral gardens"],
-  Adventure: ["Hike + waterfall combo"],
-  Relaxation: ["Slow beach day + sunset"],
-};
+import type { Dict } from "@/i18n/dictionaries";
 
 const btn = "rounded-full border px-5 py-2.5 text-sm font-bold transition";
 
-export function CustomTripPlanner({ number }: { number: string }) {
-  const [duration, setDuration] = useState("3 days");
-  const [picked, setPicked] = useState<string[]>(["Beach", "Snorkeling"]);
-  const [style, setStyle] = useState("Private");
+export function CustomTripPlanner({ number, t }: { number: string; t: Dict["custom"] }) {
+  const [duration, setDuration] = useState(t.durations[1]);
+  const [picked, setPicked] = useState<string[]>([t.interestsList[0], t.interestsList[5]]);
+  const [style, setStyle] = useState(t.styles[2]);
   const [busy, setBusy] = useState(false);
 
   const plan = useMemo(() => {
     const days = parseInt(duration, 10) || 5;
-    const list = picked.length ? picked : ["Beach"];
-    return Array.from({ length: Math.min(days, 7) }, (_, i) => ({
-      day: i + 1,
-      focus: suggestion[list[i % list.length]]?.[0] ?? list[i % list.length],
-    }));
-  }, [duration, picked]);
+    const list = picked.length ? picked : [t.interestsList[0]];
+    return Array.from({ length: Math.min(days, 7) }, (_, i) => {
+      const interest = list[i % list.length];
+      const idx = t.interestsList.indexOf(interest);
+      return { day: i + 1, focus: idx >= 0 ? t.suggestions[idx] : interest };
+    });
+  }, [duration, picked, t]);
 
   function toggle(interest: string) {
     setPicked((p) => (p.includes(interest) ? p.filter((x) => x !== interest) : [...p, interest]));
@@ -46,7 +33,7 @@ export function CustomTripPlanner({ number }: { number: string }) {
     duration,
     style,
     interests: picked.join(", ") || "-",
-    plan: plan.map((d) => `Day ${d.day}: ${d.focus}`).join("\n"),
+    plan: plan.map((d) => `${t.day} ${d.day}: ${d.focus}`).join("\n"),
   };
   const fallbackHref = waLink(
     `Hi, I'd like to discuss this trip:\n\nDuration: ${duration}\nStyle: ${style}\nInterests: ${payload.interests}\n\n${payload.plan}`,
@@ -75,9 +62,9 @@ export function CustomTripPlanner({ number }: { number: string }) {
     <div className="mt-12 grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
       <div className="space-y-8 rounded-[2rem] bg-white p-8">
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-black/40">Duration</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-black/40">{t.duration}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {durations.map((d) => (
+            {t.durations.map((d) => (
               <button
                 key={d}
                 type="button"
@@ -90,9 +77,9 @@ export function CustomTripPlanner({ number }: { number: string }) {
           </div>
         </div>
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-black/40">Interests</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-black/40">{t.interests}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {interests.map((i) => (
+            {t.interestsList.map((i) => (
               <button
                 key={i}
                 type="button"
@@ -105,9 +92,9 @@ export function CustomTripPlanner({ number }: { number: string }) {
           </div>
         </div>
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-black/40">Travel style</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-black/40">{t.style}</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {styles.map((s) => (
+            {t.styles.map((s) => (
               <button
                 key={s}
                 type="button"
@@ -123,12 +110,12 @@ export function CustomTripPlanner({ number }: { number: string }) {
 
       <div className="rounded-[2rem] bg-ink p-8 text-white lg:sticky lg:top-8 lg:self-start">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-white/40">
-          Your Lombok trip · {duration} · {style}
+          {t.planFor} · {duration} · {style}
         </p>
         <div className="mt-6 space-y-4">
           {plan.map((d) => (
             <div key={d.day} className="rounded-2xl bg-white/5 p-5">
-              <p className="text-xs font-bold uppercase tracking-widest text-white/40">Day {d.day}</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/40">{t.day} {d.day}</p>
               <p className="mt-1 font-bold">{d.focus}</p>
             </div>
           ))}
@@ -139,10 +126,10 @@ export function CustomTripPlanner({ number }: { number: string }) {
           disabled={busy}
           className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-bold text-ink transition hover:-translate-y-0.5 disabled:opacity-60"
         >
-          {busy ? "Membuka…" : <>Discuss this trip <ArrowUpRight size={16} className="ml-2" /></>}
+          {busy ? t.opening : <>{t.discuss} <ArrowUpRight size={16} className="ml-2" /></>}
         </button>
         <p className="mt-4 text-center text-xs text-white/40">
-          Plan is drafted locally, confirmed via WhatsApp.
+          {t.note}
         </p>
       </div>
     </div>

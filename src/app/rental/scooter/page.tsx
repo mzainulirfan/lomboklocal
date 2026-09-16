@@ -16,6 +16,7 @@ import { VehicleCard } from "@/components/cards";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral } from "@/lib/whatsapp";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Scooter Rental Kuta Lombok",
@@ -23,41 +24,15 @@ export const metadata: Metadata = {
     "Scooter rental in Kuta Lombok from Rp 75K/day. Honda Scoopy & Vario, helmets + phone holder included, free delivery. Book via WhatsApp.",
 };
 
-const steps = [
-  { icon: Bike, title: "Pick your scooter", desc: "Automatic, well maintained, full tank to start." },
-  { icon: MessageCircle, title: "Chat on WhatsApp", desc: "Tell us date + pickup. Confirmed in minutes." },
-  { icon: Fuel, title: "Ride Lombok", desc: "Delivered to you. Return as received." },
-];
-
-const conditions = [
-  { icon: IdCard, title: "ID deposit", desc: "Passport or ID held during rental." },
-  { icon: Wallet, title: "Pay on pickup", desc: "Cash or transfer. No prepayment." },
-  { icon: CalendarX2, title: "Free cancellation", desc: "Cancel free up to 24h before." },
-  { icon: Fuel, title: "Full-to-full", desc: "Return fuel as received." },
-];
-
-const faqs = [
-  {
-    q: "Do I need a license?",
-    a: "An international driving permit (motorcycle) is officially required. Most guests ride with a home license + experience — ride careful, police checks happen near town.",
-  },
-  {
-    q: "Are helmets included?",
-    a: "Yes — 2 helmets plus a phone holder with every scooter, at no extra cost.",
-  },
-  {
-    q: "Do you deliver?",
-    a: "Free delivery in the Kuta area. Elsewhere in South Lombok on request — just ask on WhatsApp.",
-  },
-  {
-    q: "What if the scooter breaks down?",
-    a: "Message us and we arrange a swap or pickup. You are never stranded — that's the local advantage.",
-  },
-];
+const stepIcons = [Bike, MessageCircle, Fuel];
+const condIcons = [IdCard, Wallet, CalendarX2, Fuel];
 
 export default async function ScooterPage() {
   const scooters = await getVehicles("scooter");
   const number = await getWhatsappNumber();
+  const t = getDict(await getLocale()).scooter;
+  const steps = t.steps.map((s, i) => ({ ...s, icon: stepIcons[i] }));
+  const conditions = t.conds.map((c, i) => ({ ...c, icon: condIcons[i] }));
   const from = scooters[0]?.daily ?? "Rp 75K";
 
   const jsonLd = {
@@ -93,27 +68,25 @@ export default async function ScooterPage() {
         {/* Hero */}
         <Container className="pb-14 pt-32">
           <p className="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-widest text-black/40">
-            <Link href="/" className="hover:text-ink">Home</Link>
+            <Link href="/" className="hover:text-ink">{t.crumbHome}</Link>
             <span>/</span>
-            <Link href="/rental/scooter" className="hover:text-ink">Rental</Link>
+            <Link href="/rental/scooter" className="hover:text-ink">{t.crumbRental}</Link>
             <span>/</span>
-            <span className="text-ink">Scooter</span>
+            <span className="text-ink">{t.crumbScooter}</span>
           </p>
-          <SectionLabel>Rental · Scooter · Kuta Lombok</SectionLabel>
+          <SectionLabel>{t.label}</SectionLabel>
           <h1 className="display max-w-4xl text-5xl font-extrabold uppercase sm:text-7xl lg:text-8xl">
-            Your ride.
+            {t.titleA}
             <br />
-            Your freedom.
+            {t.titleB}
           </h1>
           <p className="mt-6 max-w-xl text-base leading-8 text-black/60">
-            Automatic scooters, well maintained, ready to explore South Lombok.
-            Helmets + phone holder included, delivered to you in Kuta.
+            {t.desc}
           </p>
           <div className="mt-8 flex flex-wrap items-center gap-2.5">
             {[
-              `From ${from}/day`,
-              "Free Kuta delivery",
-              "Book in 1 chat",
+              `${t.fromPrefix} ${from}/day`,
+              ...t.chips,
             ].map((chip) => (
               <span key={chip} className="rounded-full bg-white px-4 py-2 text-sm font-bold">
                 {chip}
@@ -125,10 +98,10 @@ export default async function ScooterPage() {
               href="#fleet"
               className="inline-flex items-center justify-center rounded-full bg-ink px-7 py-4 text-sm font-bold text-white transition hover:bg-black"
             >
-              Lihat unit <ArrowDown size={16} className="ml-2" />
+              {t.viewUnits} <ArrowDown size={16} className="ml-2" />
             </a>
             <Button href={waGeneral(number)} variant="ocean">
-              Chat WhatsApp <ArrowUpRight size={16} className="ml-2" />
+              {t.chatWa} <ArrowUpRight size={16} className="ml-2" />
             </Button>
           </div>
         </Container>
@@ -138,18 +111,18 @@ export default async function ScooterPage() {
           <Container>
             <div className="flex flex-wrap items-end justify-between gap-4">
               <div>
-                <SectionLabel tone="text-white/40">The fleet</SectionLabel>
+                <SectionLabel tone="text-white/40">{t.fleetLabel}</SectionLabel>
                 <h2 className="display text-4xl font-extrabold uppercase sm:text-6xl">
-                  Pick your ride.
+                  {t.fleetA}
                 </h2>
               </div>
               <p className="max-w-xs text-sm leading-6 text-white/50">
-                Semua unit automatic, servis rutin, bensin penuh saat serah terima.
+                {t.fleetDesc}
               </p>
             </div>
             <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {scooters.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} />
+                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} labels={t} />
               ))}
             </div>
           </Container>
@@ -158,9 +131,9 @@ export default async function ScooterPage() {
         {/* How it works */}
         <div className="bg-white">
           <Container className="py-16 lg:py-24">
-            <SectionLabel>How it works</SectionLabel>
+            <SectionLabel>{t.stepsLabel}</SectionLabel>
             <h2 className="display max-w-2xl text-4xl font-extrabold uppercase sm:text-6xl">
-              On the road in 3 steps.
+              {t.stepsTitle}
             </h2>
             <div className="mt-12 grid gap-4 md:grid-cols-3">
               {steps.map((s, i) => (
@@ -181,9 +154,9 @@ export default async function ScooterPage() {
 
         {/* Conditions */}
         <Container className="py-16 lg:py-24">
-          <SectionLabel tone="text-black/40">Good to know</SectionLabel>
+          <SectionLabel tone="text-black/40">{t.condLabel}</SectionLabel>
           <h2 className="display max-w-2xl text-4xl font-extrabold uppercase sm:text-6xl">
-            Simple conditions.
+            {t.condTitle}
           </h2>
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {conditions.map((c) => (
@@ -199,12 +172,12 @@ export default async function ScooterPage() {
         {/* FAQ */}
         <div className="bg-white">
           <Container className="max-w-4xl py-16 lg:py-24">
-            <SectionLabel>FAQ</SectionLabel>
+            <SectionLabel>{t.faqLabel}</SectionLabel>
             <h2 className="display text-4xl font-extrabold uppercase sm:text-6xl">
-              Asked often.
+              {t.faqTitle}
             </h2>
             <div className="mt-10 divide-y divide-black/10 border-y border-black/10">
-              {faqs.map((f) => (
+              {t.faqs.map((f) => (
                 <details key={f.q} className="group py-5">
                   <summary className="cursor-pointer list-none text-base font-bold sm:text-lg [&::-webkit-details-marker]:hidden">
                     <span className="flex items-center justify-between gap-6">
@@ -224,23 +197,23 @@ export default async function ScooterPage() {
           <Container className="relative py-16 lg:py-24">
             <div className="flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
               <div>
-                <SectionLabel tone="text-white/50">Ready when you are</SectionLabel>
+                <SectionLabel tone="text-white/50">{t.ctaLabel}</SectionLabel>
                 <h2 className="display text-5xl font-extrabold uppercase sm:text-7xl">
-                  Ready to ride?
+                  {t.ctaTitle}
                 </h2>
                 <p className="mt-4 max-w-md text-sm leading-7 text-white/65">
-                  Tell us your dates — we confirm availability and delivery in minutes.
+                  {t.ctaDesc}
                 </p>
               </div>
               <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
                 <Button href={waGeneral(number)} variant="light">
-                  Rent via WhatsApp <ArrowUpRight size={16} className="ml-2" />
+                  {t.ctaButton} <ArrowUpRight size={16} className="ml-2" />
                 </Button>
                 <Link
                   href="/rental/car"
                   className="inline-flex items-center justify-center gap-2 text-sm font-bold text-white/80 hover:text-white"
                 >
-                  Need a car instead? <ArrowUpRight size={15} />
+                  {t.carLink} <ArrowUpRight size={15} />
                 </Link>
               </div>
             </div>

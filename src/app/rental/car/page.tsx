@@ -4,6 +4,7 @@ import { Container, SectionLabel } from "@/components/ui";
 import { VehicleCard } from "@/components/cards";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
   title: "Car Rental Lombok",
@@ -14,24 +15,25 @@ export const metadata: Metadata = {
 export default async function CarPage() {
   const cars = await getVehicles("car");
   const number = await getWhatsappNumber();
+  const t = getDict(await getLocale()).car;
   return (
     <>
       <SiteHeader dark={false} />
       <main className="bg-sand pt-32">
         <Container className="pb-16">
-          <SectionLabel>Rental · Car</SectionLabel>
+          <SectionLabel>{t.label}</SectionLabel>
           <h1 className="display max-w-3xl text-5xl font-extrabold uppercase sm:text-7xl">
-            Comfort on your route.
+            {t.title}
           </h1>
           <p className="mt-6 max-w-md text-sm leading-7 text-black/55">
-            Cars with experienced local drivers. Ideal for families, groups and long distances.
+            {t.desc}
           </p>
         </Container>
         <div className="bg-ink py-16 text-white lg:py-24">
           <Container>
             <div className="grid gap-4 sm:grid-cols-2">
               {cars.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} />
+                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} labels={t} />
               ))}
             </div>
           </Container>

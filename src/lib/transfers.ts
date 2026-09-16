@@ -2,7 +2,7 @@ import { supabasePublic } from "@/lib/supabase";
 import { formatRp } from "@/lib/format";
 import { transferRoutes as fallbackRoutes } from "@/content/site";
 
-export type TransferRoute = { from: string; to: string; price: string };
+export type TransferRoute = { from: string; to: string; price: string; amount?: number };
 
 export type TransferRouteRow = {
   id: string;
@@ -25,6 +25,7 @@ export async function getTransferRoutes(): Promise<TransferRoute[]> {
       from: r.from_loc,
       to: r.to_loc,
       price: formatRp(r.price),
+      amount: r.price,
     }));
   } catch {
     return fallbackRoutes;

@@ -2,10 +2,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight, Check } from "lucide-react";
 import type { Tour, Vehicle } from "@/content/site";
-import { InquiryButton } from "@/components/InquiryButton";
-import { waScooter } from "@/lib/whatsapp";
+import { VehicleBooking } from "@/components/VehicleBooking";
+import { getUsdRate } from "@/lib/settings";
+import { formatUSD } from "@/lib/format";
 
-export function TourCard({ tour, wide = false }: { tour: Tour; wide?: boolean }) {
+export async function TourCard({ tour, wide = false }: { tour: Tour; wide?: boolean }) {
+  const usd = formatUSD(tour.priceAmount, await getUsdRate());
   return (
     <Link href={`/tours/${tour.slug}`} className={`group ${wide ? "md:col-span-2" : ""}`}>
       <div
@@ -36,22 +38,40 @@ export function TourCard({ tour, wide = false }: { tour: Tour; wide?: boolean })
         <span>
           {tour.duration} · {tour.type}
         </span>
-        <span className="font-bold">From {tour.price}</span>
+        <span className="font-bold">
+          From {tour.price}
+          {usd && <span className="ml-1.5 font-normal text-black/40">{usd}</span>}
+        </span>
       </div>
     </Link>
   );
 }
 
-export function VehicleCard({
+export type CardLabels = {
+  date: string;
+  days: string;
+  bookUnit: string;
+  opening: string;
+  perDay: string;
+  perWeek: string;
+  weeklySave: string;
+  cancelNote: string;
+  available: string;
+};
+
+export async function VehicleCard({
   vehicle,
   index,
   number,
+  labels,
 }: {
   vehicle: Vehicle;
   index: string;
   /** Nomor WA (dari DB) untuk link booking + lead logging. */
   number: string;
+  labels: CardLabels;
 }) {
+  const usd = formatUSD(vehicle.dailyAmount, await getUsdRate());
   return (
     <article className="group flex flex-col overflow-hidden rounded-[1.75rem] bg-white/5 ring-1 ring-white/10 transition duration-300 hover:-translate-y-1 hover:ring-white/25">
       <div className="relative aspect-[16/10] overflow-hidden">
@@ -65,11 +85,11 @@ export function VehicleCard({
         <div className="absolute inset-x-0 top-0 flex items-start justify-between p-4">
           <span className="rounded-full bg-white px-3.5 py-2 text-sm font-extrabold tracking-tight text-ink shadow-lg">
             {vehicle.daily}
-            <span className="font-medium text-ink/55">/day</span>
+            <span className="font-medium text-ink/55">{labels.perDay}</span>
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full bg-ink/70 px-3 py-2 text-[11px] font-extrabold uppercase tracking-widest text-white backdrop-blur">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-            Available
+            {labels.available}
           </span>
         </div>
       </div>
@@ -78,10 +98,14 @@ export function VehicleCard({
           <h3 className="text-xl font-extrabold tracking-tight">{vehicle.name}</h3>
           <span className="shrink-0 text-sm font-bold text-white/30">{index}</span>
         </div>
-        <p className="mt-1 text-sm text-white/50">{vehicle.spec}</p>
+        <p className="mt-1 text-sm text-white/50">
+          {vehicle.spec}
+          {usd && <span className="ml-2 text-white/35">{usd}{labels.perDay}</span>}
+        </p>
         {vehicle.weekly && (
           <p className="mt-3 inline-flex w-fit items-center rounded-full bg-emerald-400/10 px-3 py-1.5 text-xs font-bold text-emerald-300">
-            {vehicle.weekly}/week · hemat untuk trip panjang
+            {vehicle.weekly}
+            {labels.perWeek} · {labels.weeklySave}
           </p>
         )}
         <ul className="mt-4 space-y-2">
@@ -94,18 +118,7 @@ export function VehicleCard({
             </li>
           ))}
         </ul>
-        <div className="mt-auto pt-6">
-          <InquiryButton
-            inquiry={{ type: "vehicle", title: vehicle.name, payload: {} }}
-            fallbackHref={waScooter(vehicle.name, "", "", "", number)}
-            className="inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-4 text-sm font-bold text-ink transition hover:bg-white/90"
-          >
-            Rent this scooter <ArrowUpRight size={16} className="ml-2" />
-          </InquiryButton>
-          <p className="mt-2.5 text-center text-xs text-white/35">
-            Free cancellation · pay on pickup
-          </p>
-        </div>
+        <VehicleBooking model={vehicle.name} number={number} labels={labels} />
       </div>
     </article>
   );

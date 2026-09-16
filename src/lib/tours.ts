@@ -28,6 +28,7 @@ function toTour(row: TourRow, itinerary: ItineraryRow[]): Tour {
     type: row.type,
     price: formatRp(row.price_amount),
     priceNote: row.price_note,
+    priceAmount: row.price_amount,
     image: row.image_url,
     description: row.description,
     itinerary,

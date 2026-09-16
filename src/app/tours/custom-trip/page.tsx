@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { getWhatsappNumber } from "@/lib/settings";
+import { getDict, getLocale } from "@/i18n/dictionaries";
 import { CustomTripPlanner } from "./CustomTripPlanner";
 
 export const metadata: Metadata = {
@@ -11,16 +12,17 @@ export const metadata: Metadata = {
 
 export default async function CustomTripPage() {
   const number = await getWhatsappNumber();
+  const t = getDict(await getLocale()).custom;
   return (
     <>
       <SiteHeader dark={false} />
       <main className="bg-sand pt-32">
         <Container className="pb-24">
-          <SectionLabel>Custom trip</SectionLabel>
+          <SectionLabel>{t.label}</SectionLabel>
           <h1 className="display max-w-3xl text-5xl font-extrabold uppercase sm:text-7xl">
-            Your Lombok trip.
+            {t.title}
           </h1>
-          <CustomTripPlanner number={number} />
+          <CustomTripPlanner number={number} t={t} />
         </Container>
       </main>
     </>

@@ -11,3 +11,10 @@ export function formatRp(value: number | null | undefined): string {
   }
   return `Rp ${value.toLocaleString("id-ID")}`;
 }
+
+/** 1200000 @16000 → "≈ $75". Hint kasar untuk turis asing. */
+export function formatUSD(idr: number | null | undefined, rate: number): string | null {
+  if (idr == null || !rate) return null;
+  const usd = idr / rate;
+  return `≈ $${usd >= 100 ? Math.round(usd).toString() : (Math.round(usd * 10) / 10).toString()}`;
+}
