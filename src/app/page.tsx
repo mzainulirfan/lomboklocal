@@ -8,7 +8,7 @@ import { TourCard, VehicleCard } from "@/components/cards";
 import { getTours } from "@/lib/tours";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
-import { waGeneral, waScooter } from "@/lib/whatsapp";
+import { waGeneral } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Lombok Local — Explore Lombok Your Way",
@@ -152,7 +152,7 @@ export default async function Home() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {scooters.map((v, i) => (
-                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name, "", "", "", number)} />
+                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} />
                 ))}
               </div>
             </div>

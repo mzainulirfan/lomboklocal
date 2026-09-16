@@ -90,6 +90,9 @@ export type Vehicle = {
   weekly?: string;
   image: string;
   perks: string[];
+  /** Nominal rupiah (ada bila dari DB) — untuk schema SEO. */
+  dailyAmount?: number;
+  weeklyAmount?: number;
 };
 
 export const scooters: Vehicle[] = [

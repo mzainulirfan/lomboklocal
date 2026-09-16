@@ -4,7 +4,6 @@ import { Container, SectionLabel } from "@/components/ui";
 import { VehicleCard } from "@/components/cards";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
-import { waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Car Rental Lombok",
@@ -32,7 +31,7 @@ export default async function CarPage() {
           <Container>
             <div className="grid gap-4 sm:grid-cols-2">
               {cars.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name, "", "", "", number)} />
+                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} number={number} />
               ))}
             </div>
           </Container>

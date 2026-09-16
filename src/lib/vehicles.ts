@@ -23,6 +23,8 @@ function toVehicle(row: VehicleRow): Vehicle {
     weekly: row.weekly_price ? formatRp(row.weekly_price) : undefined,
     image: row.image_url,
     perks: row.perks,
+    dailyAmount: row.daily_price,
+    weeklyAmount: row.weekly_price ?? undefined,
   };
 }
 
