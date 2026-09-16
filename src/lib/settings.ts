@@ -29,3 +29,18 @@ export const getSiteSettings = cache(async (): Promise<Record<string, string>> =
 export async function getWhatsappNumber(): Promise<string> {
   return (await getSiteSettings()).whatsapp_number || WHATSAPP_NUMBER;
 }
+
+/** Semua settings mentah — untuk halaman admin. */
+export async function getAllSettingsAdmin(): Promise<{ key: string; value: string }[]> {
+  const sb = supabasePublic();
+  if (!sb) return [];
+  const { data } = await sb.from("site_settings").select("key, value").order("key");
+  return (data ?? []) as { key: string; value: string }[];
+}
+
+export const SETTING_LABELS: Record<string, { label: string; hint: string }> = {
+  whatsapp_number: { label: "Nomor WhatsApp", hint: "Format internasional tanpa +, cth 6281234567890. Dipakai SEMUA tombol WA." },
+  contact_phone_display: { label: "Nomor tampil", hint: "Teks nomor di halaman kontak, cth +62 812-3456-7890." },
+  contact_hours: { label: "Jam kontak", hint: "Cth daily 07:00–21:00 WITA." },
+  base_location: { label: "Lokasi base", hint: "Cth Kuta, South Lombok." },
+};

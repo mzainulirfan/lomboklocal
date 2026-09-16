@@ -81,3 +81,25 @@ export async function getTourBySlug(slug: string): Promise<Tour | null> {
   }
   return fallbackTours.find((t) => t.slug === slug) ?? null;
 }
+
+/** Semua tour (termasuk draft) + itinerary — untuk halaman admin. */
+export async function getAllToursAdmin(): Promise<(TourRow & { published: boolean; itinerary: (ItineraryRow & { id: string })[] })[]> {
+  const sb = supabasePublic();
+  if (!sb) return [];
+  const { data: tours } = await sb.from("tours").select("*").order("sort_order", { ascending: true });
+  if (!tours) return [];
+  const ids = (tours as TourRow[]).map((t) => t.id);
+  const { data: itin } = ids.length
+    ? await sb.from("tour_itinerary").select("id, tour_id, time, place, sort_order").in("tour_id", ids).order("sort_order", { ascending: true })
+    : { data: [] };
+  const byTour = new Map<string, (ItineraryRow & { id: string })[]>();
+  for (const r of (itin ?? []) as { id: string; tour_id: string; time: string; place: string }[]) {
+    const list = byTour.get(r.tour_id) ?? [];
+    list.push({ id: r.id, time: r.time, place: r.place });
+    byTour.set(r.tour_id, list);
+  }
+  return (tours as (TourRow & { published: boolean })[]).map((t) => ({
+    ...t,
+    itinerary: byTour.get(t.id) ?? [],
+  }));
+}

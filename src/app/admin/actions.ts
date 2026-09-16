@@ -18,14 +18,14 @@ export async function isAdmin() {
 }
 
 async function requireAdmin() {
-  if (!(await isAdmin())) redirect("/admin");
+  if (!(await isAdmin())) redirect("/admin/login");
 }
 
 /** Login password sederhana (env ADMIN_PASSWORD). */
 export async function login(formData: FormData) {
   const password = String(formData.get("password") ?? "");
   if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
-    redirect("/admin?error=1");
+    redirect("/admin/login?error=1");
   }
   const store = await cookies();
   store.set(COOKIE, "1", {
@@ -41,7 +41,7 @@ export async function login(formData: FormData) {
 export async function logout() {
   const store = await cookies();
   store.delete(COOKIE);
-  redirect("/admin");
+  redirect("/admin/login");
 }
 
 export async function deleteInquiry(formData: FormData) {
@@ -113,7 +113,7 @@ export async function upsertVehicle(formData: FormData) {
     : await sb.from("vehicles").insert({ ...payload, image_url: payload.image_url ?? "" });
   if (error) throw new Error(`Simpan gagal: ${error.message}`);
   revalidateAll();
-  redirect("/admin");
+  redirect("/admin/vehicles");
 }
 
 export async function deleteVehicle(formData: FormData) {
@@ -134,4 +134,168 @@ export async function toggleVehicle(formData: FormData) {
     .eq("id", id);
   if (error) throw new Error(`Update gagal: ${error.message}`);
   revalidateAll();
+}
+
+/* ---------- Settings ---------- */
+
+export async function upsertSetting(formData: FormData) {
+  await requireAdmin();
+  const key = String(formData.get("key") ?? "").trim();
+  const value = String(formData.get("value") ?? "").trim();
+  if (!key) throw new Error("Key wajib diisi.");
+  const { error } = await supabaseAdmin()
+    .from("site_settings")
+    .upsert({ key, value }, { onConflict: "key" });
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidatePath("/", "layout");
+}
+
+/* ---------- Transfer routes ---------- */
+
+function revalidateTransfer() {
+  revalidatePath("/transfer");
+}
+
+export async function createRoute(formData: FormData) {
+  await requireAdmin();
+  const to_loc = String(formData.get("to_loc") ?? "").trim();
+  if (!to_loc) throw new Error("Tujuan wajib diisi.");
+  const { error } = await supabaseAdmin().from("transfer_routes").insert({
+    from_loc: String(formData.get("from_loc") ?? "Lombok Airport").trim() || "Lombok Airport",
+    to_loc,
+    price: parseOptionalInt(String(formData.get("price") ?? "")) ?? 0,
+    sort_order: parseOptionalInt(String(formData.get("sort_order") ?? "")) ?? 0,
+  });
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidateTransfer();
+}
+
+export async function updateRoute(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const to_loc = String(formData.get("to_loc") ?? "").trim();
+  if (!to_loc) throw new Error("Tujuan wajib diisi.");
+  const { error } = await supabaseAdmin()
+    .from("transfer_routes")
+    .update({
+      from_loc: String(formData.get("from_loc") ?? "Lombok Airport").trim() || "Lombok Airport",
+      to_loc,
+      price: parseOptionalInt(String(formData.get("price") ?? "")) ?? 0,
+      sort_order: parseOptionalInt(String(formData.get("sort_order") ?? "")) ?? 0,
+    })
+    .eq("id", id);
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidateTransfer();
+}
+
+export async function deleteRoute(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const { error } = await supabaseAdmin().from("transfer_routes").delete().eq("id", id);
+  if (error) throw new Error(`Hapus gagal: ${error.message}`);
+  revalidateTransfer();
+}
+
+/* ---------- Tours ---------- */
+
+function slugify(raw: string) {
+  return raw
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function revalidateTour(slug?: string) {
+  revalidatePath("/tours");
+  revalidatePath("/");
+  if (slug) revalidatePath(`/tours/${slug}`);
+}
+
+export async function upsertTour(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "") || null;
+  const title = String(formData.get("title") ?? "").trim();
+  if (!title) throw new Error("Judul wajib diisi.");
+  const slug = slugify(String(formData.get("slug") ?? "") || title);
+  const price = parseOptionalInt(String(formData.get("price_amount") ?? ""));
+  if (price == null) throw new Error("Harga wajib diisi (rupiah, angka).");
+
+  const photo = formData.get("photo");
+  const uploaded = await uploadPhoto(photo instanceof File ? photo : null);
+  const pastedUrl = String(formData.get("image_url") ?? "").trim();
+  const image_url = uploaded ?? pastedUrl ?? undefined;
+
+  const payload = {
+    slug,
+    title,
+    area: String(formData.get("area") ?? "").trim(),
+    duration: String(formData.get("duration") ?? "1 day").trim() || "1 day",
+    type: String(formData.get("type") ?? "Private").trim() || "Private",
+    price_amount: price,
+    price_note: String(formData.get("price_note") ?? "").trim(),
+    ...(image_url !== undefined ? { image_url } : {}),
+    description: String(formData.get("description") ?? "").trim(),
+    included: parsePerks(String(formData.get("included") ?? "")),
+    excluded: parsePerks(String(formData.get("excluded") ?? "")),
+    published: formData.get("published") === "on",
+    sort_order: parseOptionalInt(String(formData.get("sort_order") ?? "")) ?? 0,
+  };
+
+  const sb = supabaseAdmin();
+  const { error } = id
+    ? await sb.from("tours").update(payload).eq("id", id)
+    : await sb.from("tours").insert({ ...payload, image_url: payload.image_url ?? "" });
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidateTour(slug);
+  redirect("/admin/tours");
+}
+
+export async function deleteTour(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const slug = String(formData.get("slug") ?? "") || undefined;
+  const { error } = await supabaseAdmin().from("tours").delete().eq("id", id);
+  if (error) throw new Error(`Hapus gagal: ${error.message}`);
+  revalidateTour(slug);
+}
+
+export async function toggleTour(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const published = String(formData.get("published") ?? "") === "true";
+  const slug = String(formData.get("slug") ?? "") || undefined;
+  const { error } = await supabaseAdmin()
+    .from("tours")
+    .update({ published: !published })
+    .eq("id", id);
+  if (error) throw new Error(`Update gagal: ${error.message}`);
+  revalidateTour(slug);
+}
+
+/* ---------- Itinerary ---------- */
+
+export async function addItinerary(formData: FormData) {
+  await requireAdmin();
+  const tour_id = String(formData.get("tour_id") ?? "");
+  const time = String(formData.get("time") ?? "").trim();
+  const place = String(formData.get("place") ?? "").trim();
+  if (!time || !place) throw new Error("Jam dan tempat wajib diisi.");
+  const slug = String(formData.get("slug") ?? "") || undefined;
+  const { error } = await supabaseAdmin().from("tour_itinerary").insert({
+    tour_id,
+    time,
+    place,
+    sort_order: parseOptionalInt(String(formData.get("sort_order") ?? "")) ?? 0,
+  });
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidateTour(slug);
+}
+
+export async function deleteItinerary(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const slug = String(formData.get("slug") ?? "") || undefined;
+  const { error } = await supabaseAdmin().from("tour_itinerary").delete().eq("id", id);
+  if (error) throw new Error(`Hapus gagal: ${error.message}`);
+  revalidateTour(slug);
 }

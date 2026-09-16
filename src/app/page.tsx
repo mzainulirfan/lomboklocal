@@ -5,7 +5,7 @@ import { ArrowUpRight, Bike, Car, Ship, Van } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel, Button } from "@/components/ui";
 import { TourCard, VehicleCard } from "@/components/cards";
-import { tours } from "@/content/site";
+import { getTours } from "@/lib/tours";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral, waScooter } from "@/lib/whatsapp";
@@ -27,6 +27,7 @@ const experiences = ["Surf & Ocean", "Sasak Culture", "Waterfall Adventure", "Lo
 
 export default async function Home() {
   const scooters = (await getVehicles("scooter")).slice(0, 2);
+  const featuredTours = (await getTours()).slice(0, 2);
   const number = await getWhatsappNumber();
   return (
     <>
@@ -116,8 +117,8 @@ export default async function Home() {
               </p>
             </div>
             <div className="mt-16 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              <TourCard tour={tours[0]} wide />
-              <TourCard tour={tours[1]} />
+              {featuredTours[0] && <TourCard tour={featuredTours[0]} wide />}
+              {featuredTours[1] && <TourCard tour={featuredTours[1]} />}
             </div>
             <div className="mt-10">
               <Link

@@ -1,8 +1,8 @@
 import type { MetadataRoute } from "next";
-import { tours } from "@/content/site";
+import { getTours } from "@/lib/tours";
 import { posts } from "@/content/blog";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://lomboklocal.example.com";
   const staticRoutes = [
     "",
@@ -17,6 +17,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/faq",
     "/blog",
   ];
+  const tours = await getTours();
   return [
     ...staticRoutes.map((r) => ({ url: `${base}${r || "/"}`, lastModified: new Date() })),
     ...tours.map((t) => ({

@@ -4,6 +4,14 @@ import { transferRoutes as fallbackRoutes } from "@/content/site";
 
 export type TransferRoute = { from: string; to: string; price: string };
 
+export type TransferRouteRow = {
+  id: string;
+  from_loc: string;
+  to_loc: string;
+  price: number;
+  sort_order: number;
+};
+
 export async function getTransferRoutes(): Promise<TransferRoute[]> {
   const sb = supabasePublic();
   if (!sb) return fallbackRoutes;
@@ -21,4 +29,15 @@ export async function getTransferRoutes(): Promise<TransferRoute[]> {
   } catch {
     return fallbackRoutes;
   }
+}
+
+/** Semua rute (dengan id) — untuk halaman admin. */
+export async function getAllRoutesAdmin(): Promise<TransferRouteRow[]> {
+  const sb = supabasePublic();
+  if (!sb) return [];
+  const { data } = await sb
+    .from("transfer_routes")
+    .select("*")
+    .order("sort_order", { ascending: true });
+  return (data ?? []) as TransferRouteRow[];
 }
