@@ -118,7 +118,7 @@ export default async function EditTourPage({ params }: { params: Promise<{ id: s
         {stops.length === 0 && <EmptyState>Belum ada stop — tambah di bawah.</EmptyState>}
       </div>
 
-      <form action={addItinerary} className="mt-4 grid grid-cols-[110px_1fr_auto] items-end gap-3 rounded-[2rem] bg-white p-5">
+      <form action={addItinerary} className="mt-4 grid grid-cols-1 items-end gap-3 rounded-[2rem] bg-white p-5 sm:grid-cols-[110px_1fr_auto]">
         <input type="hidden" name="tour_id" value={t.id} />
         <input type="hidden" name="slug" value={t.slug} />
         <input type="hidden" name="sort_order" value={stops.length + 1} />
