@@ -4,13 +4,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, Check, Clock, MapPin, X } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
-import { Container, Button } from "@/components/ui";
+import { Container } from "@/components/ui";
+import { InquiryButton } from "@/components/InquiryButton";
 import { TourCard } from "@/components/cards";
-import { tours } from "@/content/site";
+import { tours as fallbackTours } from "@/content/site";
+import { getTourBySlug, getTours } from "@/lib/tours";
 import { waTour } from "@/lib/whatsapp";
+import { getWhatsappNumber } from "@/lib/settings";
 
 export async function generateStaticParams() {
-  return tours.map((t) => ({ slug: t.slug }));
+  return fallbackTours.map((t) => ({ slug: t.slug }));
 }
 
 export async function generateMetadata({
@@ -19,7 +22,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const tour = tours.find((t) => t.slug === slug);
+  const tour = await getTourBySlug(slug);
   if (!tour) return { title: "Tour not found" };
   return {
     title: tour.title,
@@ -34,9 +37,10 @@ export default async function TourDetail({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const tour = tours.find((t) => t.slug === slug);
+  const tour = await getTourBySlug(slug);
   if (!tour) notFound();
-  const others = tours.filter((t) => t.slug !== slug).slice(0, 2);
+  const number = await getWhatsappNumber();
+  const others = (await getTours()).filter((t) => t.slug !== slug).slice(0, 2);
 
   return (
     <>
@@ -111,9 +115,13 @@ export default async function TourDetail({
                   <MapPin size={15} /> Hotel pickup included
                 </p>
               </div>
-              <Button href={waTour(tour.title)} variant="light" className="mt-8 w-full">
+              <InquiryButton
+                inquiry={{ type: "tour", title: tour.title, payload: {} }}
+                fallbackHref={waTour(tour.title, "", "", number)}
+                className="mt-8 inline-flex w-full items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-bold text-ink transition hover:-translate-y-0.5"
+              >
                 Book this trip <ArrowUpRight size={16} className="ml-2" />
-              </Button>
+              </InquiryButton>
               <p className="mt-4 text-center text-xs text-white/40">
                 Confirmed manually via WhatsApp · no prepayment
               </p>

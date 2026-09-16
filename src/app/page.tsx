@@ -7,6 +7,7 @@ import { Container, SectionLabel, Button } from "@/components/ui";
 import { TourCard, VehicleCard } from "@/components/cards";
 import { tours } from "@/content/site";
 import { getVehicles } from "@/lib/vehicles";
+import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral, waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ const experiences = ["Surf & Ocean", "Sasak Culture", "Waterfall Adventure", "Lo
 
 export default async function Home() {
   const scooters = (await getVehicles("scooter")).slice(0, 2);
+  const number = await getWhatsappNumber();
   return (
     <>
       <SiteHeader />
@@ -149,7 +151,7 @@ export default async function Home() {
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
                 {scooters.map((v, i) => (
-                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name)} />
+                  <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name, "", "", "", number)} />
                 ))}
               </div>
             </div>
@@ -265,7 +267,7 @@ export default async function Home() {
                 Tell us what you&apos;re looking for. We&apos;ll help you build a Lombok trip that
                 makes sense for you.
               </p>
-              <Button href={waGeneral()} variant="light" className="mt-10">
+              <Button href={waGeneral(number)} variant="light" className="mt-10">
                 Talk to a local <ArrowUpRight size={16} className="ml-3" />
               </Button>
             </div>

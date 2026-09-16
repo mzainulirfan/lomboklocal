@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUpRight } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, Button } from "@/components/ui";
 import { posts } from "@/content/blog";
+import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral } from "@/lib/whatsapp";
 
 export async function generateStaticParams() {
@@ -31,6 +32,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = posts.find((p) => p.slug === slug);
   if (!post) notFound();
+  const number = await getWhatsappNumber();
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -75,7 +77,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           </div>
 
           <div className="mt-10 text-center">
-            <Button href={waGeneral()} variant="dark">
+            <Button href={waGeneral(number)} variant="dark">
               Plan this with a local <ArrowUpRight size={16} className="ml-2" />
             </Button>
           </div>

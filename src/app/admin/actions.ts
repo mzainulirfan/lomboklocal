@@ -44,6 +44,14 @@ export async function logout() {
   redirect("/admin");
 }
 
+export async function deleteInquiry(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const { error } = await supabaseAdmin().from("inquiries").delete().eq("id", id);
+  if (error) throw new Error(`Hapus gagal: ${error.message}`);
+  revalidatePath("/admin/inquiries");
+}
+
 async function uploadPhoto(file: File | null): Promise<string | null> {
   if (!file || file.size === 0) return null;
   if (file.size > 5 * 1024 * 1024) throw new Error("Foto maksimal 5MB.");

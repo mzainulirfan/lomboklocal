@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { VehicleCard } from "@/components/cards";
 import { getVehicles } from "@/lib/vehicles";
+import { getWhatsappNumber } from "@/lib/settings";
 import { waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function ScooterPage() {
   const scooters = await getVehicles("scooter");
+  const number = await getWhatsappNumber();
   return (
     <>
       <SiteHeader dark={false} />
@@ -31,7 +33,7 @@ export default async function ScooterPage() {
           <Container>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {scooters.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name)} />
+                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name, "", "", "", number)} />
               ))}
             </div>
             <div className="mt-10 rounded-3xl bg-white/5 p-7 text-sm leading-7 text-white/60">

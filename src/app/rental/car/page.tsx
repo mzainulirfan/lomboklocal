@@ -3,6 +3,7 @@ import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { VehicleCard } from "@/components/cards";
 import { getVehicles } from "@/lib/vehicles";
+import { getWhatsappNumber } from "@/lib/settings";
 import { waScooter } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 
 export default async function CarPage() {
   const cars = await getVehicles("car");
+  const number = await getWhatsappNumber();
   return (
     <>
       <SiteHeader dark={false} />
@@ -30,7 +32,7 @@ export default async function CarPage() {
           <Container>
             <div className="grid gap-4 sm:grid-cols-2">
               {cars.map((v, i) => (
-                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name)} />
+                <VehicleCard key={v.name} vehicle={v} index={`0${i + 1}`} cta={waScooter(v.name, "", "", "", number)} />
               ))}
             </div>
           </Container>

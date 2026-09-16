@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, LogOut, Pencil, Plus } from "lucide-react";
+import { ArrowUpRight, Inbox, LogOut, Pencil, Plus } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -66,14 +66,22 @@ export default async function AdminPage({
               <SectionLabel>Kelola rental</SectionLabel>
               <h1 className="display text-5xl font-extrabold uppercase sm:text-6xl">Vehicles.</h1>
             </div>
-            <form action={logout}>
-              <button
-                type="submit"
-                className="inline-flex items-center gap-2 rounded-full border border-black/15 px-5 py-3 text-sm font-bold"
+            <div className="flex gap-2">
+              <Link
+                href="/admin/inquiries"
+                className="inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-bold text-white"
               >
-                <LogOut size={15} /> Keluar
-              </button>
-            </form>
+                <Inbox size={15} /> Leads
+              </Link>
+              <form action={logout}>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-2 rounded-full border border-black/15 px-5 py-3 text-sm font-bold"
+                >
+                  <LogOut size={15} /> Keluar
+                </button>
+              </form>
+            </div>
           </div>
 
           {!configured && (

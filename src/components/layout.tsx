@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { waGeneral } from "@/lib/whatsapp";
+import { getWhatsappNumber } from "@/lib/settings";
 
-export function SiteHeader({ dark = true }: { dark?: boolean }) {
+export async function SiteHeader({ dark = true }: { dark?: boolean }) {
+  const number = await getWhatsappNumber();
   return (
     <header className="absolute inset-x-0 top-0 z-50">
       <div className="mx-auto flex max-w-[1440px] items-center justify-between px-5 py-5 sm:px-8 lg:px-12">
@@ -24,7 +26,7 @@ export function SiteHeader({ dark = true }: { dark?: boolean }) {
           <Link href="/about" className="transition hover:opacity-70">About</Link>
         </nav>
         <a
-          href={waGeneral()}
+          href={waGeneral(number)}
           target="_blank"
           rel="noopener noreferrer"
           className="rounded-full bg-white px-5 py-3 text-sm font-bold text-ink transition hover:bg-white/90"
@@ -36,7 +38,8 @@ export function SiteHeader({ dark = true }: { dark?: boolean }) {
   );
 }
 
-export function SiteFooter() {
+export async function SiteFooter() {
+  const number = await getWhatsappNumber();
   return (
     <footer className="bg-ink text-white">
       <div className="mx-auto max-w-[1440px] px-5 py-12 sm:px-8 lg:px-12">
@@ -63,7 +66,7 @@ export function SiteFooter() {
           </div>
           <div className="flex gap-10 text-sm text-white/60">
             <a href="#" className="hover:text-white">Instagram</a>
-            <a href={waGeneral()} target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a>
+            <a href={waGeneral(number)} target="_blank" rel="noopener noreferrer" className="hover:text-white">WhatsApp</a>
             <a href="#" className="hover:text-white">Google Maps</a>
           </div>
         </div>
@@ -75,11 +78,12 @@ export function SiteFooter() {
   );
 }
 
-export function MobileCTA() {
+export async function MobileCTA() {
+  const number = await getWhatsappNumber();
   return (
     <div className="fixed inset-x-4 bottom-4 z-50 md:hidden">
       <a
-        href={waGeneral()}
+        href={waGeneral(number)}
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center justify-between rounded-full bg-ink px-6 py-4 text-sm font-bold text-white shadow-2xl"

@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { TourCard } from "@/components/cards";
-import { tours } from "@/content/site";
+import { getTours } from "@/lib/tours";
 
 export const metadata: Metadata = {
   title: "Tours",
   description: "Private tours in Lombok — south beaches, snorkeling, waterfalls and culture.",
 };
 
-export default function ToursPage() {
+export default async function ToursPage() {
+  const tours = await getTours();
   return (
     <>
       <SiteHeader dark={false} />

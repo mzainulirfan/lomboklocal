@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel, Button } from "@/components/ui";
+import { getWhatsappNumber } from "@/lib/settings";
 import { waGeneral } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -50,7 +51,8 @@ const items = [
   },
 ];
 
-export default function ExperiencesPage() {
+export default async function ExperiencesPage() {
+  const number = await getWhatsappNumber();
   return (
     <>
       <SiteHeader dark={false} />
@@ -66,7 +68,7 @@ export default function ExperiencesPage() {
           </p>
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((e) => (
-              <a key={e.title} href={waGeneral()} target="_blank" rel="noopener noreferrer" className="group">
+              <a key={e.title} href={waGeneral(number)} target="_blank" rel="noopener noreferrer" className="group">
                 <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem]">
                   <Image
                     src={e.image}
@@ -87,7 +89,7 @@ export default function ExperiencesPage() {
             ))}
           </div>
           <div className="mt-14 text-center">
-            <Button href={waGeneral()} variant="dark">
+            <Button href={waGeneral(number)} variant="dark">
               Talk to a local <ArrowUpRight size={16} className="ml-2" />
             </Button>
           </div>
