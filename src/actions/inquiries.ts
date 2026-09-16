@@ -2,7 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase";
 import { getWhatsappNumber } from "@/lib/settings";
-import { buildInquiryMessage, type InquiryInput } from "@/lib/inquiries";
+import { buildInquiryMessage, normalizePhone, type InquiryInput } from "@/lib/inquiries";
 
 /**
  * Simpan lead ke tabel inquiries, kembalikan URL WhatsApp.
@@ -11,12 +11,14 @@ import { buildInquiryMessage, type InquiryInput } from "@/lib/inquiries";
  */
 export async function submitInquiry(input: InquiryInput): Promise<string> {
   const number = await getWhatsappNumber();
+  const phone = normalizePhone(input.phone);
   try {
     await supabaseAdmin().from("inquiries").insert({
       type: input.type,
       title: input.title,
       name: input.name ?? null,
-      payload: input.payload,
+      phone,
+      payload: phone ? { ...input.payload, phone } : input.payload,
     });
   } catch {
     /* lead tidak tersimpan, tapi booking via WA tetap jalan */

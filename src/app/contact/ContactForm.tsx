@@ -11,6 +11,8 @@ export type ContactLabels = {
   message: string;
   namePh: string;
   msgPh: string;
+  phone: string;
+  phonePh: string;
   submit: string;
   opening: string;
   topics: string[];
@@ -18,6 +20,7 @@ export type ContactLabels = {
 
 export function ContactForm({ number, labels }: { number: string; labels: ContactLabels }) {
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [topic, setTopic] = useState(labels.topics[0]);
   const [message, setMessage] = useState("");
   const [busy, setBusy] = useState(false);
@@ -36,6 +39,7 @@ export function ContactForm({ number, labels }: { number: string; labels: Contac
         type: "contact",
         title: topic,
         name: name || undefined,
+        phone,
         payload: { message },
       });
       go(url);
@@ -61,6 +65,20 @@ export function ContactForm({ number, labels }: { number: string; labels: Contac
         value={name}
         onChange={(e) => setName(e.target.value)}
         placeholder={labels.namePh}
+        className={input}
+      />
+      <label htmlFor="cphone" className="mt-6 block text-xs font-bold uppercase tracking-widest text-black/40">
+        {labels.phone}
+      </label>
+      <input
+        id="cphone"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        required
+        value={phone}
+        onChange={(e) => setPhone(e.target.value)}
+        placeholder={labels.phonePh}
         className={input}
       />
       <label htmlFor="topic" className="mt-6 block text-xs font-bold uppercase tracking-widest text-black/40">

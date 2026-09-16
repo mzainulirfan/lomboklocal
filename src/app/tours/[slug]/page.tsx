@@ -42,8 +42,8 @@ export default async function TourDetail({
   if (!tour) notFound();
   const number = await getWhatsappNumber();
   const usd = formatUSD(tour.priceAmount, await getUsdRate());
-  const t = getDict(await getLocale()).tourDetail;
-  const others = (await getTours()).filter((t) => t.slug !== slug).slice(0, 2);
+  const localeDict = getDict(await getLocale());
+  const t = localeDict.tourDetail;  const others = (await getTours()).filter((t) => t.slug !== slug).slice(0, 2);
 
   return (
     <>
@@ -121,7 +121,7 @@ export default async function TourDetail({
                   <MapPin size={15} /> {t.pickup}
                 </p>
               </div>
-              <TourBooking tourId={tour.id} tourTitle={tour.title} number={number} labels={{ date: t.date, guests: t.guests, book: t.book, opening: t.opening, fullNote: t.fullNote }} />
+              <TourBooking tourId={tour.id} tourTitle={tour.title} number={number} labels={{ date: t.date, guests: t.guests, phone: localeDict.common.phone, phonePh: localeDict.common.phonePh, book: t.book, opening: t.opening, fullNote: t.fullNote }} />
               <p className="mt-4 text-center text-xs leading-5 text-white/40">
                 {t.note}
               </p>

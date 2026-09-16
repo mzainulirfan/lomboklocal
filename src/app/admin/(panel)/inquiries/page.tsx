@@ -14,6 +14,7 @@ type InquiryRow = {
   type: string;
   title: string;
   name: string | null;
+  phone: string | null;
   status: string;
   payload: Record<string, string>;
   created_at: string;
@@ -175,9 +176,19 @@ export default async function InquiriesPage({
             name: r.name ?? undefined,
             payload: r.payload ?? {},
           };
+          // Follow-up ke NOMOR PEMESAN. Bila lead lama tanpa nomor, fallback ke perilaku lama.
+          const customerPhone = (r.phone ?? "").replace(/\D/g, "");
           let followUp = "#";
+          let followTitle = `Follow up ${r.title}`;
           try {
-            followUp = `https://wa.me/${number}?text=${encodeURIComponent(buildInquiryMessage(input))}`;
+            if (customerPhone) {
+              const greet = `Halo ${r.name || "kak"}, kami dari Lombok Local menindaklanjuti inquiry: ${r.title}.`;
+              followUp = `https://wa.me/${customerPhone}?text=${encodeURIComponent(greet)}`;
+              followTitle = `Chat ${r.name || r.title} via WhatsApp`;
+            } else {
+              followUp = `https://wa.me/${number}?text=${encodeURIComponent(buildInquiryMessage(input))}`;
+              followTitle = `Buka pesan inquiry (tanpa nomor pemesan)`;
+            }
           } catch {
             /* biarkan # */
           }
@@ -192,6 +203,13 @@ export default async function InquiriesPage({
                   <p className="truncate font-extrabold">
                     {r.title} {r.name ? <span className="font-normal text-black/50">· {r.name}</span> : null}
                   </p>
+                  {customerPhone ? (
+                    <a href={`https://wa.me/${customerPhone}`} target="_blank" rel="noopener noreferrer" className="mt-0.5 block text-sm font-bold text-ocean hover:underline">
+                      +{customerPhone}
+                    </a>
+                  ) : (
+                    <p className="mt-0.5 text-xs font-bold text-coral">Tanpa nomor — lead lama</p>
+                  )}
                   <p className="mt-1.5 flex flex-wrap items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest">
                     <span className="inline-flex items-center gap-1.5 rounded-full bg-sand px-2.5 py-1 text-black/60">
                       <span className={cn("h-1.5 w-1.5 rounded-full", typeDot[r.type] ?? "bg-black/30")} />
@@ -206,8 +224,8 @@ export default async function InquiriesPage({
                     href={followUp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="Follow up via WhatsApp"
-                    aria-label={`Follow up ${r.title}`}
+                    title={followTitle}
+                    aria-label={followTitle}
                     className="rounded-full bg-ink p-2.5 text-white transition hover:bg-black"
                   >
                     <MessageCircle size={16} />

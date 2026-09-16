@@ -11,6 +11,8 @@ export type TransferLabels = {
   to: string;
   date: string;
   pax: string;
+  phone: string;
+  phonePh: string;
   submit: string;
   opening: string;
 };
@@ -27,6 +29,7 @@ export function TransferForm({
   const [to, setTo] = useState(routes[0]?.to ?? "Kuta Lombok");
   const [date, setDate] = useState("");
   const [pax, setPax] = useState("2");
+  const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
@@ -44,6 +47,7 @@ export function TransferForm({
       const url = await submitInquiry({
         type: "transfer",
         title: `Airport → ${to}`,
+        phone,
         payload: { from: "Lombok Airport", to, date, pax },
       });
       go(url);
@@ -104,6 +108,23 @@ export function TransferForm({
             className="mt-2 w-full rounded-2xl border border-black/10 px-4 py-3.5"
           />
         </div>
+      </div>
+
+      <div className="mt-6">
+        <label htmlFor="phone" className="block text-xs font-bold uppercase tracking-widest text-black/40">
+          {labels.phone}
+        </label>
+        <input
+          id="phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          required
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder={labels.phonePh}
+          className="mt-2 w-full rounded-2xl border border-black/10 px-4 py-3.5"
+        />
       </div>
 
       <button

@@ -13,7 +13,8 @@ export const metadata: Metadata = {
 
 export default async function ContactPage() {
   const settings = await getSiteSettings();
-  const t = getDict(await getLocale()).contact;
+  const dict = getDict(await getLocale());
+  const t = dict.contact;
 
   return (
     <>
@@ -52,7 +53,7 @@ export default async function ContactPage() {
               </div>
             </div>
 
-            <ContactForm number={settings.whatsapp_number} labels={t} />
+            <ContactForm number={settings.whatsapp_number} labels={{ ...t, phone: dict.common.phone, phonePh: dict.common.phonePh }} />
           </div>
         </Container>
       </main>

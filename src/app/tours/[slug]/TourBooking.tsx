@@ -16,10 +16,11 @@ export function TourBooking({
   tourId: string;
   tourTitle: string;
   number: string;
-  labels: { date: string; guests: string; book: string; opening: string; fullNote: string };
+  labels: { date: string; guests: string; phone: string; phonePh: string; book: string; opening: string; fullNote: string };
 }) {
   const [date, setDate] = useState("");
   const [guests, setGuests] = useState("2");
+  const [phone, setPhone] = useState("");
   const [checked, setChecked] = useState<{ date: string; blocked: boolean } | null>(null);
 
   useEffect(() => {
@@ -65,13 +66,27 @@ export function TourBooking({
           />
         </div>
       </div>
+      <div>
+        <label htmlFor="tour-phone" className={label}>{labels.phone}</label>
+        <input
+          id="tour-phone"
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          required
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder={labels.phonePh}
+          className={field}
+        />
+      </div>
       {blocked && (
         <p className="flex items-start gap-2 rounded-2xl bg-coral/15 px-4 py-3 text-xs font-bold leading-5 text-coral">
           <CalendarX2 size={15} className="mt-0.5 shrink-0" /> {labels.fullNote}
         </p>
       )}
       <InquiryButton
-        inquiry={{ type: "tour", title: tourTitle, payload: { date, guests } }}
+        inquiry={{ type: "tour", title: tourTitle, phone, payload: { date, guests } }}
         fallbackHref={waTour(tourTitle, date, guests, number)}
         busyLabel={labels.opening}
         className="inline-flex w-full items-center justify-center rounded-full bg-white px-7 py-4 text-sm font-bold text-ink transition hover:-translate-y-0.5"

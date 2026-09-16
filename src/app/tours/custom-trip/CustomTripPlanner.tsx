@@ -9,10 +9,21 @@ import type { Dict } from "@/i18n/dictionaries";
 
 const btn = "rounded-full border px-5 py-2.5 text-sm font-bold transition";
 
-export function CustomTripPlanner({ number, t }: { number: string; t: Dict["custom"] }) {
+export function CustomTripPlanner({
+  number,
+  t,
+  phoneLabel,
+  phonePh,
+}: {
+  number: string;
+  t: Dict["custom"];
+  phoneLabel: string;
+  phonePh: string;
+}) {
   const [duration, setDuration] = useState(t.durations[1]);
   const [picked, setPicked] = useState<string[]>([t.interestsList[0], t.interestsList[5]]);
   const [style, setStyle] = useState(t.styles[2]);
+  const [phone, setPhone] = useState("");
   const [busy, setBusy] = useState(false);
 
   const plan = useMemo(() => {
@@ -49,7 +60,7 @@ export function CustomTripPlanner({ number, t }: { number: string; t: Dict["cust
       else window.location.href = url;
     };
     try {
-      const url = await submitInquiry({ type: "custom", title: `${duration} · ${style}`, payload });
+      const url = await submitInquiry({ type: "custom", title: `${duration} · ${style}`, phone, payload });
       go(url);
     } catch {
       go(fallbackHref);
@@ -119,6 +130,19 @@ export function CustomTripPlanner({ number, t }: { number: string; t: Dict["cust
               <p className="mt-1 font-bold">{d.focus}</p>
             </div>
           ))}
+        </div>
+        <div>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/40">{phoneLabel}</p>
+          <input
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            required
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            placeholder={phonePh}
+            className="mt-3 w-full rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-bold text-white placeholder:text-white/30 [color-scheme:dark]"
+          />
         </div>
         <button
           type="button"

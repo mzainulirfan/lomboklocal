@@ -50,6 +50,8 @@ export async function TourCard({ tour, wide = false }: { tour: Tour; wide?: bool
 export type CardLabels = {
   date: string;
   days: string;
+  phone: string;
+  phonePh: string;
   bookUnit: string;
   opening: string;
   perDay: string;

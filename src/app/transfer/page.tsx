@@ -17,7 +17,8 @@ export default async function TransferPage() {
   const routes = await getTransferRoutes();
   const number = await getWhatsappNumber();
   const rate = await getUsdRate();
-  const t = getDict(await getLocale()).transfer;
+  const dict = getDict(await getLocale());
+  const t = dict.transfer;
 
   return (
     <>
@@ -33,7 +34,7 @@ export default async function TransferPage() {
           </p>
 
           <div className="mt-12 grid gap-8 lg:grid-cols-[.9fr_1.1fr]">
-            <TransferForm routes={routes} number={number} labels={t} />
+            <TransferForm routes={routes} number={number} labels={{ ...t, phone: dict.common.phone, phonePh: dict.common.phonePh }} />
 
             <div className="divide-y divide-black/10 rounded-[2rem] bg-white px-8">
               {routes.map((r) => (

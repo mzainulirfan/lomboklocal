@@ -16,6 +16,10 @@ const en = {
   footer: { tagline: "Tours, rentals and local experiences in Lombok." },
   mobileCta: "WhatsApp a local",
   toggle: { label: "Bahasa / Language" },
+  common: {
+    phone: "WhatsApp number",
+    phonePh: "0812…",
+  },
   home: {
     eyebrow: "Local travel • Lombok, Indonesia",
     titleA: "Discover",
@@ -141,6 +145,8 @@ const en = {
     cancelNote: "Free cancellation · pay on pickup",
     available: "Available",
     fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
+    phone: "WhatsApp number",
+    phonePh: "0812…",
   },
   car: {
     label: "Rental · Car",
@@ -156,6 +162,8 @@ const en = {
     cancelNote: "Free cancellation · pay on pickup",
     available: "Available",
     fullNote: "That date is fully booked — you can still send, we'll offer alternatives.",
+    phone: "WhatsApp number",
+    phonePh: "0812…",
   },
   transfer: {
     label: "Transfer",
@@ -261,6 +269,10 @@ const id: Dict = {
   footer: { tagline: "Tour, rental, dan pengalaman lokal di Lombok." },
   mobileCta: "Chat orang lokal",
   toggle: { label: "Bahasa / Language" },
+  common: {
+    phone: "Nomor WhatsApp",
+    phonePh: "0812…",
+  },
   home: {
     eyebrow: "Travel lokal • Lombok, Indonesia",
     titleA: "Jelajahi",
@@ -386,6 +398,8 @@ const id: Dict = {
     cancelNote: "Batal gratis · bayar saat ambil",
     available: "Tersedia",
     fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
+    phone: "Nomor WhatsApp",
+    phonePh: "0812…",
   },
   car: {
     label: "Rental · Mobil",
@@ -401,6 +415,8 @@ const id: Dict = {
     cancelNote: "Batal gratis · bayar saat ambil",
     available: "Tersedia",
     fullNote: "Tanggal itu penuh — tetap bisa kirim, kami tawarkan alternatif.",
+    phone: "Nomor WhatsApp",
+    phonePh: "0812…",
   },
   transfer: {
     label: "Transfer",

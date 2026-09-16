@@ -16,10 +16,11 @@ export function VehicleBooking({
   model: string;
   vehicleId: string;
   number: string;
-  labels: { date: string; days: string; bookUnit: string; opening: string; cancelNote: string; fullNote: string };
+  labels: { date: string; days: string; phone: string; phonePh: string; bookUnit: string; opening: string; cancelNote: string; fullNote: string };
 }) {
   const [date, setDate] = useState("");
   const [duration, setDuration] = useState("3");
+  const [phone, setPhone] = useState("");
   const [checked, setChecked] = useState<{ date: string; blocked: boolean } | null>(null);
 
   useEffect(() => {
@@ -65,13 +66,27 @@ export function VehicleBooking({
           />
         </div>
       </div>
+      <div>
+        <label className={label}>{labels.phone}</label>
+        <input
+          type="tel"
+          inputMode="tel"
+          autoComplete="tel"
+          required
+          aria-label={labels.phone}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          placeholder={labels.phonePh}
+          className={field}
+        />
+      </div>
       {blocked && (
         <p className="mt-3 flex items-start gap-2 rounded-2xl bg-coral/15 px-4 py-3 text-xs font-bold leading-5 text-coral">
           <CalendarX2 size={15} className="mt-0.5 shrink-0" /> {labels.fullNote}
         </p>
       )}
       <InquiryButton
-        inquiry={{ type: "vehicle", title: model, payload: { date, duration } }}
+        inquiry={{ type: "vehicle", title: model, phone, payload: { date, duration } }}
         fallbackHref={waScooter(model, date, duration, "", number)}
         busyLabel={labels.opening}
         className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-4 text-sm font-bold text-ink transition hover:bg-white/90"
