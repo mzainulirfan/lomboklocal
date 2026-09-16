@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { SiteFooter, MobileCTA } from "@/components/layout";
+import { HideOnAdmin } from "@/components/HideOnAdmin";
 import { Analytics } from "@/components/Analytics";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -31,7 +32,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="flex min-h-full flex-col bg-sand text-ink">
         {children}
         <SiteFooter />
-        <MobileCTA />
+        <HideOnAdmin>
+          <MobileCTA />
+        </HideOnAdmin>
         <Analytics />
       </body>
     </html>
