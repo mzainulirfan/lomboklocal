@@ -52,7 +52,7 @@ export async function deleteInquiry(formData: FormData) {
   revalidatePath("/admin/inquiries");
 }
 
-async function uploadPhoto(file: File | null): Promise<string | null> {
+export async function uploadPhoto(file: File | null): Promise<string | null> {
   if (!file || file.size === 0) return null;
   if (file.size > 5 * 1024 * 1024) throw new Error("Foto maksimal 5MB.");
   const ext = file.type.split("/")[1]?.replace(/[^a-z0-9]/gi, "") || "jpg";
@@ -300,4 +300,65 @@ export async function deleteItinerary(formData: FormData) {
   const { error } = await supabaseAdmin().from("tour_itinerary").delete().eq("id", id);
   if (error) throw new Error(`Hapus gagal: ${error.message}`);
   revalidateTour(slug);
+}
+
+/* ---------- Gallery ---------- */
+
+function revalidateGallery() {
+  revalidatePath("/");
+}
+
+export async function createGallery(formData: FormData) {
+  await requireAdmin();
+  const photo = formData.get("photo");
+  const uploaded = await uploadPhoto(photo instanceof File ? photo : null);
+  const image_url = uploaded ?? String(formData.get("image_url") ?? "").trim();
+  if (!image_url) throw new Error("Foto wajib diisi (upload atau URL).");
+  const { error } = await supabaseAdmin().from("gallery_images").insert({
+    image_url,
+    alt: String(formData.get("alt") ?? "").trim(),
+    published: formData.get("published") === "on",
+    sort_order: parseOptionalInt(String(formData.get("sort_order") ?? "")) ?? 0,
+  });
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidateGallery();
+}
+
+export async function updateGallery(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const photo = formData.get("photo");
+  const uploaded = await uploadPhoto(photo instanceof File ? photo : null);
+  const pastedUrl = String(formData.get("image_url") ?? "").trim();
+  const { error } = await supabaseAdmin()
+    .from("gallery_images")
+    .update({
+      ...(uploaded ?? pastedUrl ? { image_url: (uploaded ?? pastedUrl) as string } : {}),
+      alt: String(formData.get("alt") ?? "").trim(),
+      published: formData.get("published") === "on",
+      sort_order: parseOptionalInt(String(formData.get("sort_order") ?? "")) ?? 0,
+    })
+    .eq("id", id);
+  if (error) throw new Error(`Simpan gagal: ${error.message}`);
+  revalidateGallery();
+}
+
+export async function deleteGallery(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const { error } = await supabaseAdmin().from("gallery_images").delete().eq("id", id);
+  if (error) throw new Error(`Hapus gagal: ${error.message}`);
+  revalidateGallery();
+}
+
+export async function toggleGallery(formData: FormData) {
+  await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const published = String(formData.get("published") ?? "") === "true";
+  const { error } = await supabaseAdmin()
+    .from("gallery_images")
+    .update({ published: !published })
+    .eq("id", id);
+  if (error) throw new Error(`Update gagal: ${error.message}`);
+  revalidateGallery();
 }

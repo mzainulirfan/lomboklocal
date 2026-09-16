@@ -8,6 +8,7 @@ import { TourCard, VehicleCard } from "@/components/cards";
 import { getTours } from "@/lib/tours";
 import { getVehicles } from "@/lib/vehicles";
 import { getWhatsappNumber } from "@/lib/settings";
+import { getGalleryImages, getHero } from "@/lib/gallery";
 import { waGeneral } from "@/lib/whatsapp";
 import { getDict, getLocale } from "@/i18n/dictionaries";
 
@@ -27,6 +28,8 @@ export default async function Home() {
   const cardLabels = dict.scooter;
   const scooters = (await getVehicles("scooter")).slice(0, 2);
   const featuredTours = (await getTours()).slice(0, 2);
+  const hero = await getHero();
+  const gallery = await getGalleryImages();
   const number = await getWhatsappNumber();
   return (
     <>
@@ -35,8 +38,8 @@ export default async function Home() {
         {/* HERO — PRD §11 */}
         <section className="relative min-h-[780px] overflow-hidden bg-ink text-white lg:min-h-[860px]">
           <Image
-            src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=2200&q=85"
-            alt="Tropical coastline in Lombok, Indonesia"
+            src={hero.src}
+            alt={hero.alt}
             fill
             priority
             sizes="100vw"
@@ -247,13 +250,8 @@ export default async function Home() {
         <section className="bg-sand">
           <Container className="pb-24 lg:pb-32">
             <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-              {[
-                { src: "https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=800&q=80", alt: "Lombok coastline" },
-                { src: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80", alt: "Turquoise beach" },
-                { src: "https://images.unsplash.com/photo-1502680390469-be75c86b636f?auto=format&fit=crop&w=800&q=80", alt: "Surfing in Lombok" },
-                { src: "https://images.unsplash.com/photo-1433086966358-54859d0ed716?auto=format&fit=crop&w=800&q=80", alt: "Waterfall in Lombok" },
-              ].map((g) => (
-                <div key={g.src} className="relative aspect-square overflow-hidden rounded-[1.5rem]">
+              {gallery.map((g, i) => (
+                <div key={`${g.src}-${i}`} className="relative aspect-square overflow-hidden rounded-[1.5rem]">
                   <Image src={g.src} alt={g.alt} fill sizes="(max-width: 768px) 50vw, 25vw" className="object-cover" loading="lazy" />
                 </div>
               ))}

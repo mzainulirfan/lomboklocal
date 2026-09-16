@@ -7,6 +7,7 @@ import {
   Car,
   Map,
   Van,
+  Images,
   Inbox,
   Settings,
   ExternalLink,
@@ -19,6 +20,7 @@ const items = [
   { href: "/admin/vehicles", label: "Vehicles", icon: Car },
   { href: "/admin/tours", label: "Tours", icon: Map },
   { href: "/admin/routes", label: "Transfer", icon: Van },
+  { href: "/admin/gallery", label: "Galeri", icon: Images },
   { href: "/admin/inquiries", label: "Leads", icon: Inbox },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -69,7 +71,7 @@ export function AdminTabBar() {
       aria-label="Navigasi admin"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink/95 backdrop-blur md:hidden"
     >
-      <div className="grid grid-cols-6 px-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5">
+      <div className="grid grid-cols-7 px-1 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1.5">
         {items.map((item) => {
           const active = isActive(pathname, item.href);
           return (

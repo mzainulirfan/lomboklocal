@@ -1,4 +1,4 @@
-import { Camera, Clock, DollarSign, MapPin, Navigation, Phone, SlidersHorizontal } from "lucide-react";
+import { Camera, Clock, DollarSign, Image as ImageIcon, MapPin, Navigation, Phone, SlidersHorizontal, Type } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllSettingsAdmin, SETTING_LABELS, DEFAULT_SETTINGS } from "@/lib/settings";
 import { upsertSetting } from "../../actions";
@@ -12,6 +12,8 @@ const icons: Record<string, typeof Phone> = {
   instagram_url: Camera,
   google_maps_url: Navigation,
   usd_rate: DollarSign,
+  hero_image_url: ImageIcon,
+  hero_image_alt: Type,
 };
 
 export default async function SettingsPage() {

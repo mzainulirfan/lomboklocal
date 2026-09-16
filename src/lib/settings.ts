@@ -10,6 +10,8 @@ export const DEFAULT_SETTINGS = {
   instagram_url: "",
   google_maps_url: "",
   usd_rate: "16000",
+  hero_image_url: "",
+  hero_image_alt: "",
 } as const;
 
 /** Seluruh settings (cached per request). Fallback ke default bila DB belum siap. */
@@ -56,4 +58,6 @@ export const SETTING_LABELS: Record<string, { label: string; hint: string }> = {
   instagram_url: { label: "Instagram URL", hint: "Link profil, cth https://instagram.com/… Kosongkan = disembunyikan." },
   google_maps_url: { label: "Google Maps URL", hint: "Link lokasi di Maps. Kosongkan = disembunyikan." },
   usd_rate: { label: "Kurs USD (Rp per $1)", hint: "Untuk tampilan ≈ $… Cth 16000. Update berkala." },
+  hero_image_url: { label: "Foto hero homepage", hint: "URL foto besar homepage. Upload via Galeri lalu tempel URL-nya, atau kosongkan = default." },
+  hero_image_alt: { label: "Alt text hero", hint: "Deskripsi foto untuk SEO & aksesibilitas." },
 };
