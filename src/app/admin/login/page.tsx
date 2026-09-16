@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/layout";
 import { Container, SectionLabel } from "@/components/ui";
 import { isAdmin, login } from "../actions";
+import { PasswordInput } from "./PasswordInput";
 
 export const metadata: Metadata = {
   title: "Admin login",
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const input =
-  "mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-ink placeholder:text-black/30";
+  "w-full rounded-2xl border border-black/10 bg-white px-4 py-3 pr-12 text-ink placeholder:text-black/30";
 
 export default async function AdminLogin({
   searchParams,
@@ -31,7 +32,7 @@ export default async function AdminLogin({
             <label htmlFor="password" className="block text-xs font-bold uppercase tracking-widest text-black/40">
               Password admin
             </label>
-            <input id="password" name="password" type="password" required className={input} />
+            <PasswordInput className={input} />
             {error && (
               <p className="mt-3 text-sm font-bold text-coral">Password salah, coba lagi.</p>
             )}
