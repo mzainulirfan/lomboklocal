@@ -168,6 +168,7 @@ export async function createRoute(formData: FormData) {
   });
   if (error) throw new Error(`Simpan gagal: ${error.message}`);
   revalidateTransfer();
+  redirect("/admin/routes");
 }
 
 export async function updateRoute(formData: FormData) {
@@ -186,6 +187,7 @@ export async function updateRoute(formData: FormData) {
     .eq("id", id);
   if (error) throw new Error(`Simpan gagal: ${error.message}`);
   revalidateTransfer();
+  redirect("/admin/routes");
 }
 
 export async function deleteRoute(formData: FormData) {

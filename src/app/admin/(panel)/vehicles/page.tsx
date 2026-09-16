@@ -78,8 +78,8 @@ export default async function VehiclesPage({
             {list.map((v) => (
               <article key={v.id} className="group overflow-hidden rounded-[1.75rem] bg-white">
                 <div className="relative aspect-[16/9] bg-sand">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   {v.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img src={v.image_url} alt={v.name} className="h-full w-full object-cover" loading="lazy" />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center text-sm font-bold text-black/30">

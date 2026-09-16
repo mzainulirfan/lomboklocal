@@ -1,128 +1,148 @@
 import Link from "next/link";
-import { Pencil, Plus } from "lucide-react";
+import { Clock, Eye, EyeOff, MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllToursAdmin } from "@/lib/tours";
 import { formatRp } from "@/lib/format";
-import { upsertTour, deleteTour, toggleTour } from "../../actions";
-import { PanelHeader, EmptyState, ViewLink, input, label } from "../ui";
+import { deleteTour, toggleTour } from "../../actions";
+import { PanelHeader, EmptyState, ViewLink } from "../ui";
+import { cn } from "@/lib/cn";
 
-export default async function ToursPage() {
+const tabs = [
+  { key: "all", label: "Semua" },
+  { key: "live", label: "Live" },
+  { key: "draft", label: "Draft" },
+] as const;
+
+export default async function ToursPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+  const active = status === "draft" ? "draft" : status === "live" ? "live" : "all";
   const configured = isSupabaseConfigured();
-  const tours = configured ? await getAllToursAdmin() : [];
+  const all = configured ? await getAllToursAdmin() : [];
+  const liveCount = all.filter((t) => t.published).length;
+  const list =
+    active === "live" ? all.filter((t) => t.published) : active === "draft" ? all.filter((t) => !t.published) : all;
 
   return (
     <>
       <PanelHeader
         kicker="Trips"
         title="Tours."
-        desc="Kelola paket tour: harga, deskripsi, include/exclude, dan status tampil. Itinerary diatur di halaman edit."
+        desc={`${all.length} tour · ${liveCount} tampil di web. Itinerary diatur di halaman edit.`}
+        action={
+          <Link
+            href="/admin/tours/new"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-white transition hover:bg-black"
+          >
+            <Plus size={16} /> Tambah
+          </Link>
+        }
       />
 
       {configured && (
         <>
-          <form action={upsertTour} className="mt-8 grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
-            <p className="flex items-center gap-2 font-extrabold md:col-span-2">
-              <Plus size={17} /> Tambah tour
-            </p>
-            <div>
-              <label className={label}>Judul</label>
-              <input name="title" required placeholder="The Essential South" className={input} />
-            </div>
-            <div>
-              <label className={label}>Slug (otomatis bila kosong)</label>
-              <input name="slug" placeholder="south-lombok" className={input} />
-            </div>
-            <div>
-              <label className={label}>Area</label>
-              <input name="area" placeholder="South Lombok" className={input} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className={label}>Durasi</label>
-                <input name="duration" defaultValue="1 day" className={input} />
-              </div>
-              <div>
-                <label className={label}>Tipe</label>
-                <input name="type" defaultValue="Private" className={input} />
-              </div>
-            </div>
-            <div>
-              <label className={label}>Harga (Rp)</label>
-              <input name="price_amount" inputMode="numeric" required placeholder="1200000" className={input} />
-            </div>
-            <div>
-              <label className={label}>Catatan harga</label>
-              <input name="price_note" placeholder="per trip · up to 4 guests" className={input} />
-            </div>
-            <div>
-              <label className={label}>Foto (upload)</label>
-              <input name="photo" type="file" accept="image/*" className={input} />
-            </div>
-            <div>
-              <label className={label}>atau URL foto</label>
-              <input name="image_url" placeholder="https://…" className={input} />
-            </div>
-            <div className="md:col-span-2">
-              <label className={label}>Deskripsi singkat</label>
-              <textarea name="description" rows={2} className={input} />
-            </div>
-            <div>
-              <label className={label}>Included (satu per baris)</label>
-              <textarea name="included" rows={3} className={input} />
-            </div>
-            <div>
-              <label className={label}>Not included (satu per baris)</label>
-              <textarea name="excluded" rows={3} className={input} />
-            </div>
-            <div>
-              <label className={label}>Urutan</label>
-              <input name="sort_order" inputMode="numeric" defaultValue="0" className={input} />
-            </div>
-            <label className="flex items-center gap-3 self-end pb-4 text-sm font-bold">
-              <input name="published" type="checkbox" defaultChecked className="h-5 w-5" /> Tampilkan di web
-            </label>
-            <button type="submit" className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white md:col-span-2">
-              Simpan tour
-            </button>
-          </form>
+          <div className="mt-8 flex flex-wrap gap-2">
+            {tabs.map((t) => {
+              const count = t.key === "all" ? all.length : t.key === "live" ? liveCount : all.length - liveCount;
+              return (
+                <Link
+                  key={t.key}
+                  href={t.key === "all" ? "/admin/tours" : `/admin/tours?status=${t.key}`}
+                  className={cn(
+                    "rounded-full px-5 py-2.5 text-sm font-bold transition",
+                    active === t.key ? "bg-ink text-white" : "bg-white hover:bg-black/5"
+                  )}
+                >
+                  {t.label} · {count}
+                </Link>
+              );
+            })}
+          </div>
 
-          <div className="mt-8 space-y-3">
-            {tours.map((t) => (
-              <div key={t.id} className="flex flex-col gap-4 rounded-3xl bg-white p-5 sm:flex-row sm:items-center">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                {t.image_url && <img src={t.image_url} alt={t.title} className="h-16 w-24 rounded-2xl object-cover" />}
-                <div className="flex-1">
-                  <p className="text-xs font-bold uppercase tracking-widest text-black/40">
-                    {t.area} · {t.itinerary.length} stop · {t.published ? "tampil" : "draft"}
-                  </p>
-                  <p className="font-extrabold">{t.title} · {formatRp(t.price_amount)}</p>
-                </div>
-                <div className="flex flex-wrap gap-2">
-                  <form action={toggleTour}>
-                    <input type="hidden" name="id" value={t.id} />
-                    <input type="hidden" name="published" value={String(t.published)} />
-                    <input type="hidden" name="slug" value={t.slug} />
-                    <button type="submit" className="rounded-full border border-black/15 px-4 py-2.5 text-sm font-bold">
-                      {t.published ? "Draftkan" : "Tampilkan"}
-                    </button>
-                  </form>
-                  <Link
-                    href={`/admin/tours/${t.id}`}
-                    className="inline-flex items-center gap-1 rounded-full border border-black/15 px-4 py-2.5 text-sm font-bold"
+          {list.length === 0 && (
+            <div className="mt-6">
+              <EmptyState>Belum ada tour — tambah yang pertama.</EmptyState>
+            </div>
+          )}
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+            {list.map((t) => (
+              <article key={t.id} className="group overflow-hidden rounded-[1.75rem] bg-white">
+                <div className="relative aspect-[16/9] bg-sand">
+                  {t.image_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={t.image_url} alt={t.title} className="h-full w-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-sm font-bold text-black/30">
+                      Tanpa foto
+                    </div>
+                  )}
+                  <span
+                    className={cn(
+                      "absolute left-4 top-4 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-widest backdrop-blur",
+                      t.published ? "bg-ink/85 text-white" : "bg-white/90 text-black/50"
+                    )}
                   >
-                    <Pencil size={14} /> Edit + itinerary
-                  </Link>
-                  <form action={deleteTour}>
-                    <input type="hidden" name="id" value={t.id} />
-                    <input type="hidden" name="slug" value={t.slug} />
-                    <button type="submit" className="rounded-full bg-coral/10 px-4 py-2.5 text-sm font-bold text-coral">
-                      Hapus
-                    </button>
-                  </form>
+                    <span className={cn("h-1.5 w-1.5 rounded-full", t.published ? "bg-emerald-400" : "bg-black/30")} />
+                    {t.published ? "Live" : "Draft"}
+                  </span>
+                  <span className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-widest text-black/60 backdrop-blur">
+                    {t.itinerary.length} stop
+                  </span>
                 </div>
-              </div>
+
+                <div className="p-5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h2 className="text-lg font-extrabold tracking-tight">{t.title}</h2>
+                      <p className="mt-0.5 flex items-center gap-1.5 text-sm text-black/50">
+                        <MapPin size={13} /> {t.area || "—"}
+                        <span className="text-black/20">·</span>
+                        <Clock size={13} /> {t.duration}
+                      </p>
+                    </div>
+                    <p className="shrink-0 font-extrabold">{formatRp(t.price_amount)}</p>
+                  </div>
+
+                  <div className="mt-4 flex items-center gap-2 border-t border-black/5 pt-4">
+                    <form action={toggleTour}>
+                      <input type="hidden" name="id" value={t.id} />
+                      <input type="hidden" name="published" value={String(t.published)} />
+                      <input type="hidden" name="slug" value={t.slug} />
+                      <button
+                        type="submit"
+                        title={t.published ? "Jadikan draft" : "Tampilkan di web"}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-black/15 px-4 py-2.5 text-sm font-bold transition hover:border-ink"
+                      >
+                        {t.published ? <EyeOff size={15} /> : <Eye size={15} />}
+                        {t.published ? "Hide" : "Show"}
+                      </button>
+                    </form>
+                    <Link
+                      href={`/admin/tours/${t.id}`}
+                      className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-2.5 text-sm font-bold text-white transition hover:bg-black"
+                    >
+                      <Pencil size={14} /> Edit + itinerary
+                    </Link>
+                    <form action={deleteTour}>
+                      <input type="hidden" name="id" value={t.id} />
+                      <input type="hidden" name="slug" value={t.slug} />
+                      <button
+                        type="submit"
+                        title="Hapus permanen"
+                        aria-label={`Hapus ${t.title}`}
+                        className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </article>
             ))}
-            {tours.length === 0 && <EmptyState>Belum ada tour — run migrasi SQL (seed) atau tambah di atas.</EmptyState>}
           </div>
 
           <ViewLink href="/tours">halaman tours</ViewLink>

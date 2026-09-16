@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Inbox } from "lucide-react";
+import { MessageCircle, Trash2 } from "lucide-react";
 import { isSupabaseConfigured, supabaseAdmin } from "@/lib/supabase";
 import { buildInquiryMessage, type InquiryInput } from "@/lib/inquiries";
 import { getWhatsappNumber } from "@/lib/settings";
@@ -25,6 +25,26 @@ const typeLabel: Record<string, string> = {
 };
 
 const filters = ["all", "tour", "vehicle", "transfer", "contact", "custom"];
+
+const typeDot: Record<string, string> = {
+  tour: "bg-ocean",
+  vehicle: "bg-coral",
+  transfer: "bg-emerald-500",
+  contact: "bg-amber-500",
+  custom: "bg-violet-500",
+};
+
+function timeAgo(iso: string) {
+  const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return "baru saja";
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m} mnt lalu`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h} jam lalu`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d} hari lalu`;
+  return new Date(iso).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+}
 
 export default async function InquiriesPage({
   searchParams,
@@ -98,39 +118,52 @@ export default async function InquiriesPage({
             /* biarkan # */
           }
           return (
-            <div key={r.id} className="rounded-3xl bg-white p-5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-xs font-bold uppercase tracking-widest text-ocean">
-                    {typeLabel[r.type] ?? r.type} ·{" "}
-                    {new Date(r.created_at).toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" })}
-                  </p>
-                  <p className="mt-1 font-extrabold">
+            <div key={r.id} className="rounded-[1.75rem] bg-white p-5">
+              <div className="flex items-start gap-3.5">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-ink text-lg font-extrabold text-white">
+                  {(r.name ?? r.title).charAt(0).toUpperCase()}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-extrabold">
                     {r.title} {r.name ? <span className="font-normal text-black/50">· {r.name}</span> : null}
                   </p>
+                  <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-extrabold uppercase tracking-widest text-black/40">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-sand px-2.5 py-1 text-black/60">
+                      <span className={cn("h-1.5 w-1.5 rounded-full", typeDot[r.type] ?? "bg-black/30")} />
+                      {typeLabel[r.type] ?? r.type}
+                    </span>
+                    {timeAgo(r.created_at)}
+                  </p>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex shrink-0 gap-2">
                   <a
                     href={followUp}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 rounded-full bg-ink px-4 py-2.5 text-sm font-bold text-white"
+                    title="Follow up via WhatsApp"
+                    aria-label={`Follow up ${r.title}`}
+                    className="rounded-full bg-ink p-2.5 text-white transition hover:bg-black"
                   >
-                    <Inbox size={14} /> Follow up
+                    <MessageCircle size={16} />
                   </a>
                   <form action={deleteInquiry}>
                     <input type="hidden" name="id" value={r.id} />
-                    <button type="submit" className="rounded-full bg-coral/10 px-4 py-2.5 text-sm font-bold text-coral">
-                      Hapus
+                    <button
+                      type="submit"
+                      title="Hapus"
+                      aria-label={`Hapus inquiry ${r.title}`}
+                      className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
+                    >
+                      <Trash2 size={16} />
                     </button>
                   </form>
                 </div>
               </div>
               {r.payload && Object.keys(r.payload).length > 0 && (
-                <dl className="mt-3 grid gap-x-6 gap-y-1 text-sm text-black/60 sm:grid-cols-2">
+                <dl className="mt-4 grid gap-x-6 gap-y-1.5 rounded-2xl bg-sand/60 p-4 text-sm text-black/65 sm:grid-cols-2">
                   {Object.entries(r.payload).map(([k, val]) => (
                     <div key={k} className="flex gap-2">
-                      <dt className="font-bold capitalize">{k}:</dt>
+                      <dt className="shrink-0 font-bold capitalize">{k}:</dt>
                       <dd className="whitespace-pre-line">{String(val) || "-"}</dd>
                     </div>
                   ))}

@@ -1,9 +1,10 @@
-import { Plus } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Pencil, Plus, Trash2 } from "lucide-react";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { getAllRoutesAdmin } from "@/lib/transfers";
 import { formatRp } from "@/lib/format";
-import { createRoute, updateRoute, deleteRoute } from "../../actions";
-import { PanelHeader, EmptyState, ViewLink, input, label } from "../ui";
+import { deleteRoute } from "../../actions";
+import { PanelHeader, EmptyState, ViewLink } from "../ui";
 
 export default async function RoutesPage() {
   const configured = isSupabaseConfigured();
@@ -14,76 +15,60 @@ export default async function RoutesPage() {
       <PanelHeader
         kicker="Transport"
         title="Transfer."
-        desc="Harga rute antar-jemput. Perubahan langsung tampil di form booking transfer."
+        desc={`${routes.length} rute antar-jemput. Perubahan harga langsung tampil di form booking transfer.`}
+        action={
+          <Link
+            href="/admin/routes/new"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-ink px-6 py-3.5 text-sm font-bold text-white transition hover:bg-black"
+          >
+            <Plus size={16} /> Tambah
+          </Link>
+        }
       />
 
       {configured && (
         <>
-          <form action={createRoute} className="mt-8 grid gap-4 rounded-[2rem] bg-white p-6 sm:p-8 md:grid-cols-2">
-            <p className="flex items-center gap-2 font-extrabold md:col-span-2">
-              <Plus size={17} /> Tambah rute
-            </p>
-            <div>
-              <label className={label}>Dari</label>
-              <input name="from_loc" defaultValue="Lombok Airport" className={input} />
+          {routes.length === 0 && (
+            <div className="mt-8">
+              <EmptyState>Belum ada rute — tambah yang pertama.</EmptyState>
             </div>
-            <div>
-              <label className={label}>Ke</label>
-              <input name="to_loc" required placeholder="Kuta Lombok" className={input} />
-            </div>
-            <div>
-              <label className={label}>Harga (Rp)</label>
-              <input name="price" inputMode="numeric" required placeholder="250000" className={input} />
-            </div>
-            <div>
-              <label className={label}>Urutan</label>
-              <input name="sort_order" inputMode="numeric" defaultValue={routes.length + 1} className={input} />
-            </div>
-            <button type="submit" className="rounded-full bg-ink px-7 py-4 text-sm font-bold text-white md:col-span-2">
-              Simpan rute
-            </button>
-          </form>
+          )}
 
-          <div className="mt-8 space-y-3">
-            {routes.map((r) => (
-              <div key={r.id} className="rounded-3xl bg-white p-5">
-                <form
-                  action={updateRoute}
-                  className="grid items-end gap-3 sm:grid-cols-[1fr_1fr_130px_90px_auto]"
-                >
-                  <input type="hidden" name="id" value={r.id} />
-                  <div>
-                    <label className={label}>Dari</label>
-                    <input name="from_loc" defaultValue={r.from_loc} className={input} />
-                  </div>
-                  <div>
-                    <label className={label}>Ke</label>
-                    <input name="to_loc" required defaultValue={r.to_loc} className={input} />
-                  </div>
-                  <div>
-                    <label className={label}>Harga (Rp)</label>
-                    <input name="price" inputMode="numeric" required defaultValue={r.price} className={input} />
-                  </div>
-                  <div>
-                    <label className={label}>Urutan</label>
-                    <input name="sort_order" inputMode="numeric" defaultValue={r.sort_order} className={input} />
-                  </div>
-                  <button type="submit" className="rounded-full bg-ink px-5 py-3.5 text-sm font-bold text-white">
-                    Simpan
-                  </button>
-                </form>
-                <div className="mt-3 flex items-center justify-between">
-                  <p className="text-xs text-black/40">Tampil sebagai {formatRp(r.price)}</p>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2">
+            {routes.map((r, i) => (
+              <article key={r.id} className="rounded-[1.75rem] bg-white p-5">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs font-bold uppercase tracking-widest text-black/40">
+                    Rute {String(i + 1).padStart(2, "0")}
+                  </p>
+                  <p className="text-xl font-extrabold tracking-tight">{formatRp(r.price)}</p>
+                </div>
+                <p className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-lg font-extrabold tracking-tight">
+                  {r.from_loc}
+                  <ArrowRight size={17} className="shrink-0 text-ocean" />
+                  {r.to_loc}
+                </p>
+                <div className="mt-4 flex items-center gap-2 border-t border-black/5 pt-4">
+                  <Link
+                    href={`/admin/routes/${r.id}`}
+                    className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-full bg-ink px-4 py-2.5 text-sm font-bold text-white transition hover:bg-black"
+                  >
+                    <Pencil size={14} /> Edit harga
+                  </Link>
                   <form action={deleteRoute}>
                     <input type="hidden" name="id" value={r.id} />
-                    <button type="submit" className="rounded-full bg-coral/10 px-4 py-2 text-sm font-bold text-coral">
-                      Hapus rute
+                    <button
+                      type="submit"
+                      title="Hapus rute"
+                      aria-label={`Hapus rute ke ${r.to_loc}`}
+                      className="rounded-full bg-coral/10 p-2.5 text-coral transition hover:bg-coral hover:text-white"
+                    >
+                      <Trash2 size={16} />
                     </button>
                   </form>
                 </div>
-              </div>
+              </article>
             ))}
-            {routes.length === 0 && <EmptyState>Belum ada rute.</EmptyState>}
           </div>
 
           <ViewLink href="/transfer">halaman transfer</ViewLink>
