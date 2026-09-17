@@ -33,6 +33,10 @@ export const metadata: Metadata = {
     "geo.region": "ID-NB",
     "geo.placename": "Kuta, Lombok",
   },
+  // Isi NEXT_PUBLIC_GOOGLE_VERIFICATION di env untuk verifikasi Search Console via meta tag.
+  ...(process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION
+    ? { verification: { google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION } }
+    : {}),
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
