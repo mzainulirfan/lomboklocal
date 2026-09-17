@@ -25,6 +25,13 @@ export const metadata: Metadata = {
     title: "Lombok Local — Explore Lombok Your Way",
     description: "Tours, rentals and local experiences made simple.",
     type: "website",
+    locale: "en_US",
+    siteName: "Lombok Local",
+  },
+  twitter: { card: "summary_large_image" },
+  other: {
+    "geo.region": "ID-NB",
+    "geo.placename": "Kuta, Lombok",
   },
 };
 

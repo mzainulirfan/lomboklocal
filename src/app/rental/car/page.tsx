@@ -9,9 +9,10 @@ import { getDict, getLocale } from "@/i18n/dictionaries";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Car Rental Lombok",
+  title: "Car Rental Lombok with Driver from Rp 650K/Day",
   description:
-    "Car rental in Lombok with driver from Rp 650K/day. Fuel, pickup and flexible route included.",
+    "Car rental in Lombok with experienced local driver from Rp 650K/day. Fuel, hotel pickup & flexible route included. Ideal for families. Book via WhatsApp.",
+  alternates: { canonical: "/rental/car" },
 };
 
 export default async function CarPage() {

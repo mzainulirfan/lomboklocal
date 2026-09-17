@@ -8,9 +8,10 @@ import { waGeneral } from "@/lib/whatsapp";
 import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
-  title: "Local Experiences",
+  title: "Things to Do in Lombok: Surf, Waterfalls & Sasak Culture",
   description:
-    "Surfing, snorkeling, waterfalls, Sasak culture and local food — experience Lombok with locals.",
+    "Local experiences in Lombok: surf lessons in Kuta, snorkeling, Sendang Gile waterfalls, Sasak villages & food tours with locals.",
+  alternates: { canonical: "/experiences" },
 };
 
 const images = [

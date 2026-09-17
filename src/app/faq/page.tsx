@@ -4,8 +4,10 @@ import { Container, SectionLabel } from "@/components/ui";
 import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
-  title: "FAQ",
-  description: "Booking, pricing, rental and transfer questions — answered simply.",
+  title: "Lombok Travel FAQ: Booking, Rental Prices & Transfers",
+  description:
+    "How to book Lombok tours, scooter rental requirements, airport transfer prices & cancellation policy — answered simply.",
+  alternates: { canonical: "/faq" },
 };
 
 export default async function FaqPage() {

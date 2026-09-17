@@ -6,8 +6,10 @@ import { getTours } from "@/lib/tours";
 import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
-  title: "Tours",
-  description: "Private tours in Lombok — south beaches, snorkeling, waterfalls and culture.",
+  title: "Private Lombok Tours: South Beaches, Snorkeling & Culture",
+  description:
+    "Private Lombok tours with local driver-guide: South Lombok beaches, snorkeling boat trips & waterfalls. Clear pricing from Rp 850K. Book via WhatsApp.",
+  alternates: { canonical: "/tours" },
 };
 
 export default async function ToursPage() {

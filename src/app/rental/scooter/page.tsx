@@ -21,9 +21,10 @@ import { getDict, getLocale } from "@/i18n/dictionaries";
 import { Suspense } from "react";
 
 export const metadata: Metadata = {
-  title: "Scooter Rental Kuta Lombok",
+  title: "Scooter Rental Kuta Lombok from Rp 75K/Day",
   description:
-    "Scooter rental in Kuta Lombok from Rp 75K/day. Honda Scoopy & Vario, helmets + phone holder included, free delivery. Book via WhatsApp.",
+    "Scooter rental in Kuta Lombok from Rp 75K/day. Honda Scoopy & Vario, 2 helmets + phone holder included, free Kuta delivery. Book via WhatsApp.",
+  alternates: { canonical: "/rental/scooter" },
 };
 
 const stepIcons = [Bike, MessageCircle, Fuel];

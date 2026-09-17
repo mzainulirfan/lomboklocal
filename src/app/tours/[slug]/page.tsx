@@ -25,10 +25,12 @@ export async function generateMetadata({
   const { slug } = await params;
   const tour = await getTourBySlug(slug);
   if (!tour) return { title: "Tour not found" };
+  const title = `${tour.title} — ${tour.area} Private Tour Lombok`;
   return {
-    title: tour.title,
-    description: tour.description,
-    openGraph: { title: tour.title, description: tour.description, images: [tour.image] },
+    title,
+    description: `${tour.description} ${tour.duration} · ${tour.type}. From ${tour.price} ${tour.priceNote}. Book via WhatsApp.`,
+    alternates: { canonical: `/tours/${slug}` },
+    openGraph: { title, description: tour.description, images: [tour.image] },
   };
 }
 

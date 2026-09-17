@@ -13,7 +13,7 @@ const en = {
   nav: { tours: "Tours", rental: "Rental", experiences: "Experiences", transfer: "Transfer", about: "About" },
   header: { book: "Book a Trip" },
   menu: { open: "Open menu", close: "Close menu", navLabel: "Navigation menu", book: "Book a Trip" },
-  footer: { tagline: "Tours, rentals and local experiences in Lombok." },
+  footer: { tagline: "Tours, rentals and local experiences in Lombok.", location: "Kuta · South Lombok · Indonesia" },
   mobileCta: "WhatsApp a local",
   toggle: { label: "Bahasa / Language" },
   common: {
@@ -276,7 +276,7 @@ const id: Dict = {
   nav: { tours: "Tour", rental: "Rental", experiences: "Pengalaman", transfer: "Transfer", about: "Tentang" },
   header: { book: "Pesan Trip" },
   menu: { open: "Buka menu", close: "Tutup menu", navLabel: "Menu navigasi", book: "Pesan Trip" },
-  footer: { tagline: "Tour, rental, dan pengalaman lokal di Lombok." },
+  footer: { tagline: "Tour, rental, dan pengalaman lokal di Lombok.", location: "Kuta · Lombok Selatan · Indonesia" },
   mobileCta: "Chat orang lokal",
   toggle: { label: "Bahasa / Language" },
   common: {

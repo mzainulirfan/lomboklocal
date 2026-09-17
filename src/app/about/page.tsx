@@ -4,8 +4,10 @@ import { Container, SectionLabel } from "@/components/ui";
 import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
-  title: "About",
-  description: "Lombok Local — local travel partner in Lombok. Friendly, transparent, flexible.",
+  title: "About Lombok Local — Your Local Travel Partner in Kuta Lombok",
+  description:
+    "Lombok Local is a small Kuta-based travel team: private tours, scooter & car rental, airport transfers. Friendly, transparent, flexible.",
+  alternates: { canonical: "/about" },
 };
 
 export default async function AboutPage() {

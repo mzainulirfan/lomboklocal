@@ -76,6 +76,9 @@ export async function SiteFooter() {
             <p className="mt-3 max-w-xs text-sm leading-6 text-white/40">
               {t.footer.tagline}
             </p>
+            <p className="mt-2 text-xs font-bold uppercase tracking-widest text-white/35">
+              {t.footer.location}
+            </p>
             <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/60">
               <Link href="/tours" className="hover:text-white">Tours</Link>
               <Link href="/tours/custom-trip" className="hover:text-white">Custom trip</Link>

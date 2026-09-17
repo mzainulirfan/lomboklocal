@@ -11,11 +11,13 @@ import { getWhatsappNumber } from "@/lib/settings";
 import { getGalleryImages, getHero } from "@/lib/gallery";
 import { waGeneral } from "@/lib/whatsapp";
 import { getDict, getLocale } from "@/i18n/dictionaries";
+import { LocalBusinessJsonLd } from "@/components/LocalBusinessJsonLd";
 
 export const metadata: Metadata = {
-  title: "Lombok Local — Explore Lombok Your Way",
+  title: "Scooter Rental, Private Tours & Airport Transfer in Lombok",
   description:
-    "Tours, scooter rental, car rental and local experiences in Lombok. Transparent pricing, local team, book via WhatsApp.",
+    "Lombok Local: scooter rental in Kuta from Rp 75K/day, private South Lombok tours, car rental with driver & fixed-price airport transfer. Book via WhatsApp.",
+  alternates: { canonical: "/" },
 };
 
 const serviceIcons = [Bike, Car, Ship, Van];
@@ -281,6 +283,7 @@ export default async function Home() {
           </Container>
         </section>
       </main>
+      <LocalBusinessJsonLd />
     </>
   );
 }

@@ -8,9 +8,10 @@ import { getDict, getLocale } from "@/i18n/dictionaries";
 import { TransferForm } from "./TransferForm";
 
 export const metadata: Metadata = {
-  title: "Airport Transfer Lombok",
+  title: "Lombok Airport Transfer — Fixed Prices to Kuta & Senggigi",
   description:
-    "Fixed-price airport transfer in Lombok. Flight tracking, driver waiting at arrivals. Book via WhatsApp.",
+    "Fixed-price Lombok airport transfer: Kuta Rp 250K, Senggigi Rp 350K. Flight tracking, driver waiting at arrivals. Book via WhatsApp.",
+  alternates: { canonical: "/transfer" },
 };
 
 export default async function TransferPage() {

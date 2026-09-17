@@ -7,8 +7,10 @@ import { getDict, getLocale } from "@/i18n/dictionaries";
 import { ContactForm } from "./ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact",
-  description: "Talk to a local in Lombok — fastest reply via WhatsApp.",
+  title: "Contact Lombok Local — Chat Your Kuta Lombok Travel Plan",
+  description:
+    "Contact Lombok Local in Kuta for tours, scooter & car rental and airport transfer. Fastest reply via WhatsApp, daily 07:00–21:00 WITA.",
+  alternates: { canonical: "/contact" },
 };
 
 export default async function ContactPage() {

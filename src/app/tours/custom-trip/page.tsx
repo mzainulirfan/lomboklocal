@@ -6,8 +6,10 @@ import { getDict, getLocale } from "@/i18n/dictionaries";
 import { CustomTripPlanner } from "./CustomTripPlanner";
 
 export const metadata: Metadata = {
-  title: "Custom Trip Planner",
-  description: "Build your own Lombok itinerary by duration, interests and style — then discuss with a local.",
+  title: "Custom Lombok Itinerary Planner — Build Your Own Trip",
+  description:
+    "Plan a custom Lombok itinerary by duration, interests and travel style — beaches, waterfalls, surf & culture — then discuss with a local.",
+  alternates: { canonical: "/tours/custom-trip" },
 };
 
 export default async function CustomTripPage() {

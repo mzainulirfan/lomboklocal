@@ -8,9 +8,10 @@ import { posts } from "@/content/blog";
 import { getDict, getLocale } from "@/i18n/dictionaries";
 
 export const metadata: Metadata = {
-  title: "Blog",
+  title: "Lombok Travel Guides: Rental Prices, Itineraries & Transfers",
   description:
-    "Lombok travel guides: scooter rental prices, south Lombok itineraries, airport transfers and private tours.",
+    "Lombok travel guides by locals: scooter rental prices in Kuta, 1-day South Lombok itinerary, airport transfer prices & private tour tips.",
+  alternates: { canonical: "/blog" },
 };
 
 export default async function BlogPage() {
